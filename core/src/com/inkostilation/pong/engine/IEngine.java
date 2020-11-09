@@ -1,13 +1,13 @@
 package com.inkostilation.pong.engine;
 
-import com.inkostilation.pong.commands.IClientCommand;
-import com.inkostilation.pong.commands.IServerCommand;
+import com.inkostilation.pong.commands.AbstractClientCommand;
+import com.inkostilation.pong.commands.AbstractServerCommand;
 
 import java.io.IOException;
 
-public interface IEngine {
+public interface IEngine<M> {
 
     void act();
-    IClientCommand receiveCommand() throws IOException;
-    void sendCommand(IServerCommand command) throws IOException;
+    void receiveCommand(AbstractClientCommand command, M mark) throws IOException;
+    void sendCommand(AbstractServerCommand<M> command) throws IOException;
 }

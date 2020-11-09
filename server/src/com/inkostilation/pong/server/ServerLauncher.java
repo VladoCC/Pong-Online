@@ -6,12 +6,12 @@ public class ServerLauncher {
 	public static void main (String[] arg) {
 		//LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		//new LwjglApplication(new PongMain(), config);
-		NetworkProcessor processor = new NetworkProcessor();
+		NetworkProcessor processor = NetworkProcessor.getInstance();
 		processor.start();
 
 		while (true) {
 			if (processor.isStarted()) {
-				processor.processConnectons();
+				processor.processConnections();
 			}
 		}
 	}

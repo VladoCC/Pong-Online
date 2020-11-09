@@ -1,7 +1,14 @@
 package com.inkostilation.pong.server.network;
 
-import com.inkostilation.pong.commands.IClientCommand;
-import com.inkostilation.pong.commands.IServerCommand;
+import com.inkostilation.pong.commands.AbstractClientCommand;
+import com.inkostilation.pong.commands.AbstractServerCommand;
+import com.inkostilation.pong.engine.IEngine;
+import com.inkostilation.pong.exceptions.EmptyParcelException;
+import com.inkostilation.pong.exceptions.ParsingNotFinishedException;
+import com.inkostilation.pong.processing.MessageParser;
+import com.inkostilation.pong.processing.NetworkConnection;
+import com.inkostilation.pong.processing.Serializer;
+import com.inkostilation.pong.server.engine.GameEngine;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,22 +19,24 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NetworkProcessor implements IProcessor {
 
     private static final String host = "localhost";
     private static final int port = 8080;
-    private static final int bufferSize = 1024;
+
+    private static NetworkProcessor instance = null;
 
     private Selector selector;
     private ServerSocketChannel serverSocket;
+    private Serializer serializer = new Serializer();
 
     private boolean started = true;
 
-    private ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-
-    public NetworkProcessor() {
+    private NetworkProcessor() {
         try {
             selector = Selector.open();
             serverSocket = ServerSocketChannel.open();
@@ -37,6 +46,13 @@ public class NetworkProcessor implements IProcessor {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static NetworkProcessor getInstance() {
+        if (instance == null) {
+            instance = new NetworkProcessor();
+        }
+        return instance;
     }
 
     @Override
@@ -49,7 +65,8 @@ public class NetworkProcessor implements IProcessor {
         started = false;
     }
 
-    public void processConnectons() {
+    @Override
+    public void processConnections() {
         try {
             if (started) {
                 selector.select();
@@ -78,71 +95,38 @@ public class NetworkProcessor implements IProcessor {
     }
 
     private void receiveMessage(SelectionKey key) throws IOException {
-        SocketChannel client = (SocketChannel) key.channel();
-        String str = "";
-        ArrayList<String> list = new  ArrayList<>();
+        List<String> objects = parseObjects((SocketChannel) key.channel());
+        List<AbstractServerCommand<SocketChannel>> commands = objects.stream()
+                .map(o -> {
+                    AbstractServerCommand<SocketChannel> command = (AbstractServerCommand<SocketChannel>) serializer.deserialize(o);
+                    command.setEngine(GameEngine.getInstance());
+                    command.setMarker((SocketChannel) key.channel());
+                    return command;
+                })
+                .collect(Collectors.toList());
 
-        /** message parsing */
-        while (true) {
+        for (AbstractServerCommand<SocketChannel> command: commands) {
             try {
-                client.read(buffer);
-            } catch (IOException e) {
-                e.printStackTrace();
-                client.close();
-            }
-            str += new String(buffer.array()).trim();
-            int counter = 0;
-            int parcelStart = -1;
-            int parcelEnd;
-            for (int i = 0; i < str.length(); i++) {
-                char elem = str.charAt(i);
-                if (elem == '{') {
-                    if (counter == 0) {
-                        parcelStart = i;
-                    }
-                    counter++;
-                }
-                if (elem == '}' && counter > 0)  { //check counter to see if we are in json or not
-                    counter--;
-                    if (counter == 0 && parcelStart != -1) {
-                        parcelEnd = i;
-                        list.add(str.substring(parcelStart, parcelEnd + 1));
-                    }
-                }
-            }
-            buffer.clear();
-
-            //todo temp code for echo
-            list.add(str);
-
-            if (counter == 0) {
-                break;
-            }
-        }
-
-        /** message processing (echo for now)*/
-        for (String message: list) {
-            try {
-                String result;
-                //result = processConnection(gson.fromJson(message))
-                System.out.println(message);
-                result = message;
-                buffer.flip();
-                client.write(ByteBuffer.wrap(message.getBytes()));
-                buffer.clear();
-                if (message.equals("quit")) {
-                    client.close();
-                    list.clear();
-                }
+                IEngine<SocketChannel> engine = GameEngine.getInstance();
+                engine.sendCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
+    private List<String> parseObjects(SocketChannel channel) throws IOException {
+        return NetworkConnection.listen(channel);
+    }
+
     @Override
-    public IClientCommand processConnection(IServerCommand command) {
-        return null;
+    public void sendMessage(AbstractClientCommand command, SocketChannel channel) {
+        String message = serializer.serialize(command);
+        try {
+            channel.write(ByteBuffer.wrap(message.getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isStarted() {
