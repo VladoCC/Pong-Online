@@ -57,7 +57,7 @@ public class ServerEngine implements IEngine<Void> {
     }
 
     @Override
-    public void receiveCommand(AbstractClientCommand command, Void mark) {
+    public void receiveCommand(AbstractClientCommand command, Void mark) throws IOException{
         // todo temp code
         command.execute();
     }
@@ -66,5 +66,10 @@ public class ServerEngine implements IEngine<Void> {
     public void sendCommand(AbstractServerCommand<Void> command) throws IOException {
         String msg = serializer.serialize(command);
         channel.write(ByteBuffer.wrap(msg.getBytes()));
+    }
+
+    @Override
+    public void updateField(SocketChannel channel) {
+
     }
 }
