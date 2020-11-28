@@ -1,10 +1,7 @@
 package com.inkostilation.pong.server.engine;
 
 import com.inkostilation.pong.commands.*;
-import com.inkostilation.pong.engine.Ball;
-import com.inkostilation.pong.engine.IEngine;
-import com.inkostilation.pong.engine.IPongEngine;
-import com.inkostilation.pong.engine.Paddle;
+import com.inkostilation.pong.engine.*;
 import com.inkostilation.pong.exceptions.NoEngineException;
 import com.inkostilation.pong.server.network.NetworkProcessor;
 
@@ -15,12 +12,10 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     private static IPongEngine<SocketChannel> instance = null;
 
-    private Paddle paddle;
-    private Ball ball;
+    private Field field;
 
     private PongEngine() {
-        paddle = new Paddle(50, 250);
-        ball = new Ball();
+        field = new Field();
     }
 
     public static IPongEngine<SocketChannel> getInstance() {
@@ -32,9 +27,6 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     @Override
     public void act() {
-        paddle.move();
-        ball.move();
-        //ball.checkPaddleCollision();
     }
 
     @Override
@@ -46,12 +38,10 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     public void sendCommand(AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
         // todo temp code
         command.setEngine(this);
-
     }
 
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
-        receiveCommand(new ClientObjectCommand(paddle), channel);
-        receiveCommand(new ClientObjectCommand(ball), channel);
+        receiveCommand(new ClientObjectCommand(field), channel);
     }
 }

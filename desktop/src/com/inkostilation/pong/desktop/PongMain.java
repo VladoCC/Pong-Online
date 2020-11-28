@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.inkostilation.pong.desktop.network.Network;
 import com.inkostilation.pong.engine.Ball;
+import com.inkostilation.pong.engine.Field;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.engine.Paddle;
 
@@ -15,9 +16,7 @@ public class PongMain extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Texture img;
 	private ShapeRenderer shapeRenderer;
-	private Paddle p1;
-	private Paddle p2;
-	private Ball ball;
+	private Field field;
 
 	private IEngine engine;
 
@@ -27,9 +26,7 @@ public class PongMain extends ApplicationAdapter {
 		shapeRenderer = new ShapeRenderer();
 		img = new Texture("badlogic.jpg");
 		engine = Network.getEngine();
-		p1 = new Paddle(50, 250);
-		p2 = new Paddle(650, 250);
-		ball = new Ball();
+		field = new Field();
 	}
 
 	@Override
@@ -42,9 +39,7 @@ public class PongMain extends ApplicationAdapter {
 		//batch.draw(img, 0, 0);
 		//batch.end();
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		p1.draw(shapeRenderer);
-		p2.draw(shapeRenderer);
-		ball.draw(shapeRenderer);
+		//draw
 		shapeRenderer.end();
 	}
 	

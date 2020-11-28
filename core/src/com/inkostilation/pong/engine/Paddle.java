@@ -3,7 +3,7 @@ package com.inkostilation.pong.engine;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Paddle {
+public class Paddle extends Rectangle {
 
     private static final float FRICTION = 0.94f;
     public enum Direction {
@@ -28,29 +28,37 @@ public class Paddle {
 
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(x, y, 20, 80);
+        shapeRenderer.rect(x, y, getWidth(), getHeight());
     }
 
     public void move() {
         int dir = accelerationDirection.value;
-        if (dir != 0) {
+        if (dir != 0)
             yVel += 2 * dir;
-        } else {
+        else
             yVel *= FRICTION;
-        }
 
-        if (yVel >= 5) {
+        if (yVel >= 5)
             yVel = 5;
-        } else if (yVel <= -5) {
+        else if (yVel <= -5)
             yVel = -5;
-        }
 
         y += yVel;
 
+    }
+
+    public boolean isInBounds(int height) {
+        if ((y < 0) || (y > height - getHeight()))
+            return false;
+        return true;
+    }
+
+    public void constrain(int height)
+    {
         if (y < 0) {
             y = 0;
-        } else if (y > 420) {
-            y = 420;
+        } else if (y > height - getHeight()) {
+            y = height - getHeight();
         }
     }
 

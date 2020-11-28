@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.Random;
 
-public class Ball {
-    private float xVel, yVel, x, y;
+import static java.lang.Math.PI;
 
-    public Ball() {
-        x = 350;
-        y = 250;
+public class Ball {
+    private static final float MAXBOUNCEANGLE = (float) (5*PI/12);
+    private float xVel, yVel, x, y, radius = 10;
+
+    public Ball(float x, float y) {
+        this.x = x;
+        this.y = y;
         xVel = getRandomSpeed() * getRandomDirection();
         yVel = getRandomSpeed() * getRandomDirection();
     }
@@ -21,38 +24,50 @@ public class Ball {
     }
 
     private int getRandomDirection() {
-        if (new Random().nextBoolean()) {
+        if (new Random().nextBoolean())
             return 1;
-        } else {
+        else
             return -1;
-        }
     }
 
-    public boolean isColliding(Paddle paddle) {
-        if (x <= paddle.getX()) {
-            return y >= paddle.getY() && y <= paddle.getY() + 80;
+    public boolean isColliding(Paddle paddle, int width) {
+        if (paddle.getX() < width / 2 ) {
+            if (x <= paddle.getX() + paddle.getWidth() + radius)
+                return y >= paddle.getY() && y <= paddle.getY() + paddle.getHeight();
+            return false;
         }
-        return false;
+        else
+            if (x >= paddle.getX() - radius)
+                return y >= paddle.getY() && y <= paddle.getY() + paddle.getHeight();
+            return false;
     }
 
-    public void applyCollision() {
-        xVel = -xVel;
+    public void applyCollision(Paddle paddle) {
+        float relativeIntersectY = (paddle.getY()+(paddle.getHeight()/2)) - y;
+        float normalizedRelativeIntersectionY = (relativeIntersectY/(paddle.getHeight()/2));
+        float bounceAngle = normalizedRelativeIntersectionY * MAXBOUNCEANGLE;
+        xVel = (float) (xVel*Math.cos(bounceAngle));
+        yVel = (float) (yVel*-Math.sin(bounceAngle));
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(x - 10, y - 10, 20);
+        shapeRenderer.circle(x - radius, y - radius, radius);
     }
 
     public void move() {
         x += xVel;
         y += yVel;
+    }
 
-        if (y < 10) {
-            yVel = -yVel;
-        }
-        if (y > 490) {
-            yVel = -yVel;
-        }
+    public boolean isInBounds(int width) {
+        if ((y < radius) || (y > width - radius))
+            return false;
+        return true;
+    }
+
+    public void constrain()
+    {
+        yVel = -yVel;
     }
 }
