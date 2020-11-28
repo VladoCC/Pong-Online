@@ -70,4 +70,16 @@ public class Ball {
     {
         yVel = -yVel;
     }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
 }

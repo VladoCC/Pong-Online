@@ -12,4 +12,8 @@ public abstract class AbstractClientCommand implements ICommand {
     protected INotifier getNotifier() {
         return notifier;
     }
+
+    public void setNotifier(INotifier notifier) {
+        this.notifier = notifier;
+    }
 }

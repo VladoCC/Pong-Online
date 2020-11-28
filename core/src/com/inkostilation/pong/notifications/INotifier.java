@@ -1,4 +1,11 @@
 package com.inkostilation.pong.notifications;
 
-public class INotifier {
+import com.inkostilation.pong.engine.Ball;
+import com.inkostilation.pong.engine.Field;
+import com.inkostilation.pong.engine.Paddle;
+
+public interface INotifier {
+
+    <O> void notifyObservers(O observable);
+    <O> void subscribe(IObserver<O> observer, Class<O> type);
 }

@@ -21,7 +21,7 @@ public class ServerCommandRouter implements ICommandRouter<SocketChannel> {
         } else {
             command.setEngine(NullEngine.INSTANCE);
             command.execute();
-            NetworkProcessor.getInstance().sendMessage(new ClientMessageCommand("pong"), command.getMarker());
+            NetworkProcessor.getInstance().sendMessage(new ClientMessageCommand("pog"), command.getMarker());
         }
     }
 }

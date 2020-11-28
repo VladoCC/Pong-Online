@@ -4,6 +4,7 @@ import com.inkostilation.pong.commands.AbstractClientCommand;
 import com.inkostilation.pong.commands.AbstractServerCommand;
 import com.inkostilation.pong.commands.ServerMessageCommand;
 import com.inkostilation.pong.commands.UpdateCommand;
+import com.inkostilation.pong.desktop.notification.ClientNotifier;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.exceptions.EmptyParcelException;
 import com.inkostilation.pong.exceptions.NoEngineException;
@@ -55,7 +56,11 @@ public class ServerEngine implements IEngine<Void> {
         List<String> objects = NetworkConnection.listen(channel);
 
         return objects.stream()
-                .map(o -> (AbstractClientCommand) serializer.deserialize(o))
+                .map(o -> {
+                    AbstractClientCommand command = (AbstractClientCommand) serializer.deserialize(o);
+                    command.setNotifier(ClientNotifier.getInstance());
+                    return command;
+                })
                 .collect(Collectors.toList());
     }
 
