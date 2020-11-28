@@ -3,40 +3,40 @@ package com.inkostilation.pong.engine;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import java.util.Random;
+
 public class Ball {
-    float xVel, yVel, x, y;
+    private float xVel, yVel, x, y;
 
     public Ball() {
         x = 350;
         y = 250;
-        xVel = (float) (getRandomSpeed() * getRandomDirection());
-        yVel = (float) (getRandomSpeed() * getRandomDirection());
+        xVel = getRandomSpeed() * getRandomDirection();
+        yVel = getRandomSpeed() * getRandomDirection();
     }
 
-    public double getRandomSpeed()
+    private float getRandomSpeed()
     {
-        return (Math.random() * 3 + 2);
+        return new Random().nextFloat() * 3 + 2;
     }
 
-    public int getRandomDirection() {
-        int rand = (int) (Math.random() * 2);
-        if (rand == 1) {
+    private int getRandomDirection() {
+        if (new Random().nextBoolean()) {
             return 1;
         } else {
             return -1;
         }
     }
 
-    public void checkPaddleCollision(Paddle p1, Paddle p2) {
-        if (x <= 50) {
-            if (y >= p1.y && y <= p1.y + 80) {
-                xVel = -xVel;
-            }
-        } else if (x >= 650) {
-            if (y >= p2.y && y <= p2.y + 80) {
-                xVel = -xVel;
-            }
+    public boolean isColliding(Paddle paddle) {
+        if (x <= paddle.getX()) {
+            return y >= paddle.getY() && y <= paddle.getY() + 80;
         }
+        return false;
+    }
+
+    public void applyCollision() {
+        xVel = -xVel;
     }
 
     public void draw(ShapeRenderer shapeRenderer) {

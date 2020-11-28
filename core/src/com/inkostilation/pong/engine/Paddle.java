@@ -5,59 +5,64 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Paddle {
 
-        final float GRAVITY = 0.94f;
+    private static final float FRICTION = 0.94f;
+    public enum Direction {
+        UP(-1), DOWN(1), IDLE(0);
 
-        float x, y, yVel;
-        boolean upAccel, downAccel;
-        int player;
+        public final int value;
 
-        public Paddle(int player) {
-            upAccel = false;
-            downAccel = false;
-            y = 210;
-            yVel = 0;
+        Direction(int dir) {
+            value = dir;
+        }
+    }
 
-            if (player == 1)
-                x = 20;
-            else
-                x = 660;
+    private float x, y, yVel = 0;
+    private Direction accelerationDirection;
+
+    public Paddle(float x, float y) {
+        accelerationDirection = Direction.IDLE;
+
+        this.x = x;
+        this.y = y;
+    }
+
+    public void draw(ShapeRenderer shapeRenderer) {
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(x, y, 20, 80);
+    }
+
+    public void move() {
+        int dir = accelerationDirection.value;
+        if (dir != 0) {
+            yVel += 2 * dir;
+        } else {
+            yVel *= FRICTION;
         }
 
-        public void draw(ShapeRenderer shapeRenderer) {
-            shapeRenderer.setColor(Color.WHITE);
-            shapeRenderer.rect(x, y, 20, 80);
+        if (yVel >= 5) {
+            yVel = 5;
+        } else if (yVel <= -5) {
+            yVel = -5;
         }
 
-        public void move() {
-            if (upAccel) {
-                yVel -= 2;
-            } else if (downAccel) {
-                yVel += 2;
-            } else if (!upAccel && !downAccel) {
-                yVel *= GRAVITY;
-            }
+        y += yVel;
 
-            if (yVel >= 5) {
-                yVel = 5;
-            } else if (yVel <= -5) {
-                yVel = -5;
-            }
-
-            y += yVel;
-
-            if (y < 0) {
-                y = 0;
-            } else if (y > 420) {
-                y = 420;
-            }
+        if (y < 0) {
+            y = 0;
+        } else if (y > 420) {
+            y = 420;
         }
+    }
 
-        public void setUpAccel(boolean input) {
-            upAccel = input;
-        }
+    public void setAccelerationDirection(Direction accelerationDirection) {
+        this.accelerationDirection = accelerationDirection;
+    }
 
-        public void setDownAccel(boolean input) {
-            downAccel = input;
-        }
+    public float getX() {
+        return x;
+    }
 
+    public float getY() {
+        return y;
+    }
 }

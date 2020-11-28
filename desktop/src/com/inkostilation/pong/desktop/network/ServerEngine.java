@@ -3,8 +3,10 @@ package com.inkostilation.pong.desktop.network;
 import com.inkostilation.pong.commands.AbstractClientCommand;
 import com.inkostilation.pong.commands.AbstractServerCommand;
 import com.inkostilation.pong.commands.ServerMessageCommand;
+import com.inkostilation.pong.commands.UpdateCommand;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.exceptions.EmptyParcelException;
+import com.inkostilation.pong.exceptions.NoEngineException;
 import com.inkostilation.pong.exceptions.ParsingNotFinishedException;
 import com.inkostilation.pong.processing.MessageParser;
 import com.inkostilation.pong.processing.NetworkConnection;
@@ -39,11 +41,12 @@ public class ServerEngine implements IEngine<Void> {
     public void act() {
         try {
             sendCommand(new ServerMessageCommand("ping"));
+            //sendCommand(new UpdateCommand());
             List<AbstractClientCommand> commands = listen();
             for (AbstractClientCommand command: commands) {
                 receiveCommand(command, null);
             }
-        } catch (IOException e) {
+        } catch (IOException | NoEngineException e) {
             e.printStackTrace();
         }
     }
@@ -57,19 +60,14 @@ public class ServerEngine implements IEngine<Void> {
     }
 
     @Override
-    public void receiveCommand(AbstractClientCommand command, Void mark) throws IOException{
+    public void receiveCommand(AbstractClientCommand command, Void mark) throws IOException, NoEngineException {
         // todo temp code
         command.execute();
     }
 
     @Override
-    public void sendCommand(AbstractServerCommand<Void> command) throws IOException {
+    public void sendCommand(AbstractServerCommand command) throws IOException {
         String msg = serializer.serialize(command);
         channel.write(ByteBuffer.wrap(msg.getBytes()));
-    }
-
-    @Override
-    public void updateField(SocketChannel channel) {
-
     }
 }

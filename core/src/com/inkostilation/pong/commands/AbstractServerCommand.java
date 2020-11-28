@@ -1,13 +1,16 @@
 package com.inkostilation.pong.commands;
 
 import com.inkostilation.pong.engine.IEngine;
+import com.inkostilation.pong.exceptions.NoEngineException;
 
-public abstract class AbstractServerCommand<M> implements ICommand {
+import java.io.IOException;
 
-    private IEngine<M> engine;
+public abstract class AbstractServerCommand<E extends IEngine<M>, M> implements ICommand {
+
+    protected E engine;
     private M marker;
 
-    public void setEngine(IEngine<M> engine) {
+    public void setEngine(E engine) {
         this.engine = engine;
     }
 
@@ -15,11 +18,21 @@ public abstract class AbstractServerCommand<M> implements ICommand {
         this.marker = marker;
     }
 
-    protected IEngine<M> getEngine() {
+    protected E getEngine() {
         return engine;
     }
 
     public M getMarker() {
         return marker;
     }
+
+    @Override
+    public void execute() throws NoEngineException, IOException {
+        if (engine == null) {
+            throw new NoEngineException();
+        }
+        execute(engine);
+    }
+
+    abstract void execute(E engine) throws IOException;
 }

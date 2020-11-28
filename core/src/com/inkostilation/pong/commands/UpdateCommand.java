@@ -1,13 +1,12 @@
 package com.inkostilation.pong.commands;
 
-import com.inkostilation.pong.engine.IEngine;
+import com.inkostilation.pong.engine.IPongEngine;
 
 import java.io.IOException;
-import java.nio.channels.SocketChannel;
 
-public class UpdateCommand extends AbstractServerCommand<SocketChannel> {
+public class UpdateCommand<M> extends AbstractPongCommand<M> {
     @Override
-    public void execute() throws IOException {
-       getEngine().updateField(getMarker());
+    public void execute(IPongEngine engine) throws IOException {
+       getEngine().sendFieldState(getMarker());
     }
 }

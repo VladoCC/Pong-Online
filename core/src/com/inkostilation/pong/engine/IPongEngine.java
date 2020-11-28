@@ -1,15 +1,14 @@
 package com.inkostilation.pong.engine;
 
-import com.inkostilation.pong.commands.AbstractClientCommand;
 import com.inkostilation.pong.commands.AbstractServerCommand;
 import com.inkostilation.pong.exceptions.NoEngineException;
 
 import java.io.IOException;
-import java.nio.channels.SocketChannel;
 
-public interface IEngine<M> {
+public interface IPongEngine<M> extends IEngine<M> {
 
-    void act();
-    void receiveCommand(AbstractClientCommand command, M mark) throws IOException, NoEngineException;
+    @Override
     void sendCommand(AbstractServerCommand<IEngine<M>, M> command) throws IOException, NoEngineException;
+
+    void sendFieldState(M marker) throws IOException;
 }

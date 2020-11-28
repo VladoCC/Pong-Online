@@ -3,12 +3,9 @@ package com.inkostilation.pong.server.network;
 import com.inkostilation.pong.commands.AbstractClientCommand;
 import com.inkostilation.pong.commands.AbstractServerCommand;
 import com.inkostilation.pong.engine.IEngine;
-import com.inkostilation.pong.exceptions.EmptyParcelException;
-import com.inkostilation.pong.exceptions.ParsingNotFinishedException;
-import com.inkostilation.pong.processing.MessageParser;
 import com.inkostilation.pong.processing.NetworkConnection;
 import com.inkostilation.pong.processing.Serializer;
-import com.inkostilation.pong.server.engine.GameEngine;
+import com.inkostilation.pong.server.engine.PongEngine;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,7 +14,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +29,7 @@ public class NetworkProcessor implements IProcessor {
     private Selector selector;
     private ServerSocketChannel serverSocket;
     private Serializer serializer = new Serializer();
+    private ICommandRouter<SocketChannel> router = new ServerCommandRouter();
 
     private boolean started = true;
 
@@ -96,19 +93,17 @@ public class NetworkProcessor implements IProcessor {
 
     private void receiveMessage(SelectionKey key) throws IOException {
         List<String> objects = parseObjects((SocketChannel) key.channel());
-        List<AbstractServerCommand<SocketChannel>> commands = objects.stream()
+        List<AbstractServerCommand<IEngine<SocketChannel>, SocketChannel>> commands = objects.stream()
                 .map(o -> {
-                    AbstractServerCommand<SocketChannel> command = (AbstractServerCommand<SocketChannel>) serializer.deserialize(o);
-                    command.setEngine(GameEngine.getInstance());
+                    AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command = (AbstractServerCommand<IEngine<SocketChannel>, SocketChannel>) serializer.deserialize(o);
                     command.setMarker((SocketChannel) key.channel());
                     return command;
                 })
                 .collect(Collectors.toList());
 
-        for (AbstractServerCommand<SocketChannel> command: commands) {
+        for (AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
             try {
-                IEngine<SocketChannel> engine = GameEngine.getInstance();
-                engine.sendCommand(command);
+                router.route(command);
             } catch (Exception e) {
                 e.printStackTrace();
             }

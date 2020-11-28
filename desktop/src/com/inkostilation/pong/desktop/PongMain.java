@@ -27,8 +27,8 @@ public class PongMain extends ApplicationAdapter {
 		shapeRenderer = new ShapeRenderer();
 		img = new Texture("badlogic.jpg");
 		engine = Network.getEngine();
-		p1 = new Paddle(1);
-		p2 = new Paddle(2);
+		p1 = new Paddle(50, 250);
+		p2 = new Paddle(650, 250);
 		ball = new Ball();
 	}
 

@@ -3,27 +3,29 @@ package com.inkostilation.pong.server.engine;
 import com.inkostilation.pong.commands.*;
 import com.inkostilation.pong.engine.Ball;
 import com.inkostilation.pong.engine.IEngine;
+import com.inkostilation.pong.engine.IPongEngine;
 import com.inkostilation.pong.engine.Paddle;
+import com.inkostilation.pong.exceptions.NoEngineException;
 import com.inkostilation.pong.server.network.NetworkProcessor;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-public class GameEngine implements IEngine<SocketChannel> {
+public class PongEngine implements IPongEngine<SocketChannel> {
 
-    private static IEngine<SocketChannel> instance = null;
+    private static IPongEngine<SocketChannel> instance = null;
 
     private Paddle paddle;
     private Ball ball;
 
-    private GameEngine() {
-        paddle = new Paddle(1);
+    private PongEngine() {
+        paddle = new Paddle(50, 250);
         ball = new Ball();
     }
 
-    public static IEngine<SocketChannel> getInstance() {
+    public static IPongEngine<SocketChannel> getInstance() {
         if (instance == null) {
-            instance = new GameEngine();
+            instance = new PongEngine();
         }
         return instance;
     }
@@ -41,14 +43,14 @@ public class GameEngine implements IEngine<SocketChannel> {
     }
 
     @Override
-    public void sendCommand(AbstractServerCommand<SocketChannel> command) throws IOException {
+    public void sendCommand(AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
         // todo temp code
-        command.execute();
-        receiveCommand(new ClientMessageCommand("pong"), command.getMarker());
+        command.setEngine(this);
+
     }
 
     @Override
-    public void updateField(SocketChannel channel) throws IOException {
+    public void sendFieldState(SocketChannel channel) throws IOException {
         receiveCommand(new ClientObjectCommand(paddle), channel);
         receiveCommand(new ClientObjectCommand(ball), channel);
     }

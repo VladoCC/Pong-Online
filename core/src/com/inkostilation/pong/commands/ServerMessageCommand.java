@@ -1,5 +1,7 @@
 package com.inkostilation.pong.commands;
 
+import com.inkostilation.pong.engine.IEngine;
+
 public class ServerMessageCommand extends AbstractServerCommand {
 
     private String text;
@@ -9,7 +11,7 @@ public class ServerMessageCommand extends AbstractServerCommand {
     }
 
     @Override
-    public void execute() {
+    public void execute(IEngine engine) {
         System.out.println(text);
     }
 }

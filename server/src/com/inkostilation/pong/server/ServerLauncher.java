@@ -1,5 +1,6 @@
 package com.inkostilation.pong.server;
 
+import com.inkostilation.pong.server.engine.PongEngine;
 import com.inkostilation.pong.server.network.NetworkProcessor;
 
 public class ServerLauncher {
@@ -12,6 +13,7 @@ public class ServerLauncher {
 		while (true) {
 			if (processor.isStarted()) {
 				processor.processConnections();
+				PongEngine.getInstance().act();
 			}
 		}
 	}
