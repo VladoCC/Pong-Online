@@ -1,8 +1,6 @@
 package com.inkostilation.pong.desktop.network;
 
-import com.inkostilation.pong.commands.AbstractResponseCommand;
-import com.inkostilation.pong.commands.AbstractRequestCommand;
-import com.inkostilation.pong.commands.RequestMessageCommand;
+import com.inkostilation.pong.commands.*;
 import com.inkostilation.pong.desktop.notification.ClientNotifier;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.exceptions.NoEngineException;
@@ -13,6 +11,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,14 @@ public class ServerEngine implements IEngine<Void> {
 
     private boolean connected = false;
 
+    private List<AbstractRequestCommand> commandQueue = new ArrayList<>();
+
     ServerEngine() {
         serializer = new Serializer();
+    }
+
+    public void addCommandToQueue(AbstractRequestCommand command) {
+        commandQueue.add(command);
     }
 
     @Override
@@ -36,25 +41,31 @@ public class ServerEngine implements IEngine<Void> {
             if (!connected) {
                 connect(host, port);
             } else {
-                sendCommand(new RequestMessageCommand("ping"));
-                //sendCommand(new UpdateCommand());
-                List<AbstractResponseCommand> commands = listen();
-                for (AbstractResponseCommand command : commands) {
-                    receiveCommand(command, null);
-                }
+                communicate();
             }
         } catch (IOException | NoEngineException e) {
             e.printStackTrace();
         }
     }
 
-    private void connect(String host, int port) {
-        try {
-            channel = SocketChannel.open(new InetSocketAddress(host, port));
-            connected = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            connected = false;
+    private void connect(String host, int port) throws IOException {
+        channel = SocketChannel.open(new InetSocketAddress(host, port));
+
+        connected = true;
+        addCommandToQueue(new StartGameCommand());
+    }
+
+    private void communicate() throws IOException, NoEngineException {
+        for (AbstractRequestCommand command: commandQueue) {
+            sendCommand(command);
+        }
+        commandQueue.clear();
+
+        sendCommand(new UpdateCommand());
+
+        List<AbstractResponseCommand> commands = listen();
+        for (AbstractResponseCommand command : commands) {
+            receiveCommand(command, null);
         }
     }
 
