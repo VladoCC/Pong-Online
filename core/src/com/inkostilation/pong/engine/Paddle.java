@@ -78,5 +78,5 @@ public class Paddle extends Rectangle {
         return playerRole;
     }
 
-    public void setPlayerRole(PlayerRole playeRole) { this.playerRole = playerRole; }
+    public void setPlayerRole(PlayerRole playerRole) { this.playerRole = playerRole; }
 }
