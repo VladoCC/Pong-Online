@@ -13,9 +13,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NetworkProcessor implements IProcessor {
@@ -29,6 +27,8 @@ public class NetworkProcessor implements IProcessor {
     private ServerSocketChannel serverSocket;
     private Serializer serializer = new Serializer();
     private ICommandRouter<SocketChannel> router = new ServerCommandRouter();
+    private Map<SocketChannel, List<AbstractResponseCommand>> commandQueue = new HashMap<>();
+
 
     private boolean started = true;
 
@@ -78,6 +78,10 @@ public class NetworkProcessor implements IProcessor {
                     }
                     iter.remove();
                 }
+
+                if (commandQueue.size() > 0) {
+                    sendAll();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,6 +99,9 @@ public class NetworkProcessor implements IProcessor {
         List<AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>> commands = objects.stream()
                 .map(o -> {
                     AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command = (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>) serializer.deserialize(o);
+                    if (command == null) {
+                        return null;
+                    }
                     command.setMarker((SocketChannel) key.channel());
                     return command;
                 })
@@ -102,7 +109,9 @@ public class NetworkProcessor implements IProcessor {
 
         for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
             try {
-                router.route(command);
+                if (command != null) {
+                    router.route(command);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -115,12 +124,29 @@ public class NetworkProcessor implements IProcessor {
 
     @Override
     public void sendMessage(AbstractResponseCommand command, SocketChannel channel) {
-        String message = serializer.serialize(command);
-        try {
-            channel.write(ByteBuffer.wrap(message.getBytes()));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (commandQueue.containsKey(channel)) {
+            commandQueue.get(channel).add(command);
+        } else {
+            List<AbstractResponseCommand> commands = new ArrayList<>();
+            commands.add(command);
+            commandQueue.put(channel, commands);
         }
+    }
+
+    private void sendAll() {
+        for (Map.Entry<SocketChannel, List<AbstractResponseCommand>> entry: commandQueue.entrySet()) {
+            StringBuilder message = new StringBuilder();
+            for (AbstractResponseCommand command: entry.getValue()) {
+                message.append(serializer.serialize(command));
+            }
+            try {
+                entry.getKey().write(ByteBuffer.wrap(message.toString().getBytes()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        commandQueue.clear();
     }
 
     public boolean isStarted() {

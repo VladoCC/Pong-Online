@@ -12,6 +12,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,12 +58,13 @@ public class ServerEngine implements IEngine<Void> {
     }
 
     private void communicate() throws IOException, NoEngineException {
-        for (AbstractRequestCommand command: commandQueue) {
-            sendCommand(command);
+        commandQueue.add(new UpdateFieldCommand());
+        AbstractRequestCommand[] requestCommands = new AbstractRequestCommand[commandQueue.size()];
+        for (int i = 0; i < commandQueue.size(); i++) {
+            requestCommands[i] = commandQueue.get(i);
         }
+        sendCommand(requestCommands);
         commandQueue.clear();
-
-        sendCommand(new UpdateFieldCommand());
 
         List<AbstractResponseCommand> commands = listen();
         for (AbstractResponseCommand command : commands) {
@@ -75,7 +78,9 @@ public class ServerEngine implements IEngine<Void> {
         return objects.stream()
                 .map(o -> {
                     AbstractResponseCommand command = (AbstractResponseCommand) serializer.deserialize(o);
-                    command.setNotifier(ClientNotifier.getInstance());
+                    if (command != null) {
+                        command.setNotifier(ClientNotifier.getInstance());
+                    }
                     return command;
                 })
                 .collect(Collectors.toList());
@@ -84,12 +89,17 @@ public class ServerEngine implements IEngine<Void> {
     @Override
     public void receiveCommand(AbstractResponseCommand command, Void mark) throws IOException, NoEngineException {
         // todo temp code
-        command.execute();
+        if (command != null) {
+            command.execute();
+        }
     }
 
     @Override
-    public void sendCommand(AbstractRequestCommand command) throws IOException {
-        String msg = serializer.serialize(command);
-        channel.write(ByteBuffer.wrap(msg.getBytes()));
+    public void sendCommand(AbstractRequestCommand... commands) throws IOException {
+        StringBuilder msg = new StringBuilder();
+        for (AbstractRequestCommand command: commands) {
+            msg.append(serializer.serialize(command));
+        }
+        channel.write(ByteBuffer.wrap(msg.toString().getBytes()));
     }
 }

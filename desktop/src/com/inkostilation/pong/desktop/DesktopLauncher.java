@@ -7,8 +7,8 @@ import com.inkostilation.pong.desktop.display.PongMain;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 700;
-		config.height = 500;
+		config.width = 1280;
+		config.height = 720;
 		new LwjglApplication(new PongMain(), config);
 	}
 }

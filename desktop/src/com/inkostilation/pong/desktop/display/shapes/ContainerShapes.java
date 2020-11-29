@@ -9,6 +9,7 @@ public class ContainerShapes extends AbstractShape {
     public ContainerShapes(float width, float height) {
         this.width = width;
         this.height = height;
+        setReady(true);
     }
 
     @Override

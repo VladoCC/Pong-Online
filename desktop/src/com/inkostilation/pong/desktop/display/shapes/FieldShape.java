@@ -28,7 +28,7 @@ public class FieldShape extends AbstractShape implements IObserver<Field> {
         float x = position.getX() + offsetX;
         float y = position.getY() + offsetY;
         renderer.setColor(Color.WHITE);
-        renderer.set(ShapeRenderer.ShapeType.Line);
+        //renderer.set(ShapeRenderer.ShapeType.Line);
         renderer.rectLine(x, y, x + observable.getWidth(), y + observable.getHeight(), WIDTH);
         return new Position(w, h);
     }

@@ -10,5 +10,5 @@ public interface IEngine<M> {
 
     void act();
     void receiveCommand(AbstractResponseCommand command, M mark) throws IOException, NoEngineException;
-    void sendCommand(AbstractRequestCommand<IEngine<M>, M> command) throws IOException, NoEngineException;
+    void sendCommand(AbstractRequestCommand<IEngine<M>, M>... command) throws IOException, NoEngineException;
 }

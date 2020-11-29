@@ -40,10 +40,12 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
-    public void sendCommand(AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
+    public void sendCommand(AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>... commands) throws IOException, NoEngineException {
         // todo temp code
-        command.setEngine(this);
-        command.execute();
+        for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
+            command.setEngine(this);
+            command.execute();
+        }
     }
 
     @Override

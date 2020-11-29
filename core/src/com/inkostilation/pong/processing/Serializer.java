@@ -17,15 +17,15 @@ public class Serializer {
     }
 
     public ICommand deserialize(String json) {
-        Parcel parcel = gson.fromJson(json, Parcel.class);
-        Class<? extends ICommand> commandClass = null;
         try {
+            Parcel parcel = gson.fromJson(json, Parcel.class);
+            Class<? extends ICommand> commandClass = null;
             commandClass = (Class<? extends ICommand>) Class.forName(parcel.commandClass);
-        } catch (ClassNotFoundException e) {
+            return commandClass.cast(parcel.command);
+        } catch (ClassNotFoundException | JsonParseException e) {
             e.printStackTrace();
             return null;
         }
-        return commandClass.cast(parcel.command);
     }
 
     public String serialize(ICommand command) {
@@ -48,6 +48,9 @@ public class Serializer {
         public Parcel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             final JsonObject jsonObject = json.getAsJsonObject();
             final JsonPrimitive commandClass = (JsonPrimitive) jsonObject.get("commandClass");
+            if (commandClass == null) {
+                throw new JsonParseException("Incorrect Parcel object: \"commandClass\" field not found. ");
+            }
             final String className = commandClass.getAsString();
             final JsonElement commandJson = jsonObject.get("command");
             ICommand command;
