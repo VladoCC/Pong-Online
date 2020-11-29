@@ -43,6 +43,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     public void sendCommand(AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
         // todo temp code
         command.setEngine(this);
+        command.execute();
     }
 
     @Override

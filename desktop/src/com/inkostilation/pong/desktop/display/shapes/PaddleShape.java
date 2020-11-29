@@ -28,7 +28,7 @@ public class PaddleShape extends AbstractShape implements IObserver<Paddle> {
 
     @Override
     public void observe(Paddle observable) {
-        if (observable.getPlayerRole().equals(role)) {
+        if (observable != null && observable.getPlayerRole().equals(role)) {
             this.observable = observable;
             setReady(true);
         }
