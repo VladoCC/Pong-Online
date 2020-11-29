@@ -60,11 +60,13 @@ public class PongEngine implements IPongEngine<SocketChannel> {
             case 0: {
                 player = PlayerRole.FIRST;
                 playersMap.put(channel, player);
+                field.getPaddle1().setPlayerRole(player);
                 break;
             }
             case 1: {
                 player = PlayerRole.SECOND;
                 playersMap.put(channel, player);
+                field.getPaddle2().setPlayerRole(player);
                 break;
             }
             default: {
