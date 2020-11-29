@@ -7,8 +7,8 @@ public class ResponsePlayerRoleCommand extends AbstractResponseCommand{
 
     private PlayerRole playerRole;
 
-    public ResponsePlayerRoleCommand(int player) {
-        this.playerRole.setNumber(player);
+    public ResponsePlayerRoleCommand(PlayerRole player) {
+        this.playerRole = player;
     }
 
     @Override

@@ -13,4 +13,6 @@ public interface IPongEngine<M> extends IEngine<M> {
     void sendFieldState(M marker) throws IOException;
 
     void sendPlayerRole(M marker) throws IOException;
+
+    void assignPlayerRole(M marker) throws IOException;
 }

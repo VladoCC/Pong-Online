@@ -7,15 +7,19 @@ import com.inkostilation.pong.server.network.NetworkProcessor;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class PongEngine implements IPongEngine<SocketChannel> {
 
     private static IPongEngine<SocketChannel> instance = null;
 
     private Field field;
-    private static int playersCount = 0;
+    public LinkedHashMap<SocketChannel, PlayerRole> playersMap;
 
     private PongEngine() {
+        playersMap = new LinkedHashMap<SocketChannel, PlayerRole>();
         field = new Field();
     }
 
@@ -47,8 +51,34 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
+    public void assignPlayerRole(SocketChannel channel) throws IOException {
+        int playersNumber = playersMap.size();
+        PlayerRole player;
+        switch (playersNumber)
+        {
+            case 0: {
+                player = PlayerRole.FIRST;
+                playersMap.put(channel, player);
+                break;
+            }
+            case 1: {
+                player = PlayerRole.SECOND;
+                playersMap.put(channel, player);
+                break;
+            }
+            default: {
+                player = PlayerRole.DENIED;
+                playersMap.put(channel, player);
+                break;
+            }
+        }
+        receiveCommand(new ResponseObjectCommand(player), channel);
+    }
+
+    @Override
     public void sendPlayerRole(SocketChannel channel) throws IOException {
-        playersCount++;
-        receiveCommand(new ResponsePlayerRoleCommand(playersCount), channel);
+        if (playersMap.containsKey(channel)) {
+            receiveCommand(new ResponsePlayerRoleCommand(playersMap.get(channel)), channel);
+        }
     }
 }

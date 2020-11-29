@@ -22,17 +22,6 @@ public class Paddle extends Rectangle {
 
     public Paddle(float x, float y) {
         accelerationDirection = Direction.IDLE;
-        /*switch (player)
-        {
-            case 1: {
-                this.playerNumber = PlayerRole.FIRST;
-                break;
-            }
-            case 2: {
-                this.playerNumber = PlayerRole.SECOND;
-                break;
-            }
-        }*/
         this.x = x;
         this.y = y;
     }
