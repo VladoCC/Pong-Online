@@ -22,11 +22,12 @@ public class PongMain extends Game {
 
 	@Override
 	public void render () {
+		super.render();
 		Network.getEngine().act();
 	}
 	
 	@Override
 	public void dispose () {
-
+		super.dispose();
 	}
 }

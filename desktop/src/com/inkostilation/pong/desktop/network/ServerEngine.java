@@ -24,26 +24,37 @@ public class ServerEngine implements IEngine<Void> {
     private SocketChannel channel;
     private Serializer serializer;
 
+    private boolean connected = false;
+
     ServerEngine() {
-        try {
-            channel = SocketChannel.open(new InetSocketAddress(host, port));
-            serializer = new Serializer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        serializer = new Serializer();
     }
 
     @Override
     public void act() {
         try {
-            sendCommand(new RequestMessageCommand("ping"));
-            //sendCommand(new UpdateCommand());
-            List<AbstractResponseCommand> commands = listen();
-            for (AbstractResponseCommand command: commands) {
-                receiveCommand(command, null);
+            if (!connected) {
+                connect(host, port);
+            } else {
+                sendCommand(new RequestMessageCommand("ping"));
+                //sendCommand(new UpdateCommand());
+                List<AbstractResponseCommand> commands = listen();
+                for (AbstractResponseCommand command : commands) {
+                    receiveCommand(command, null);
+                }
             }
         } catch (IOException | NoEngineException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void connect(String host, int port) {
+        try {
+            channel = SocketChannel.open(new InetSocketAddress(host, port));
+            connected = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            connected = false;
         }
     }
 
