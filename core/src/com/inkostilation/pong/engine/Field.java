@@ -20,6 +20,18 @@ public class Field {
         return width;
     }
 
+    public Paddle getPaddle1() {
+        return paddle1;
+    }
+
+    public Paddle getPaddle2() {
+        return paddle2;
+    }
+
+    public Ball getBall() {
+        return ball;
+    }
+
     public void run() {
         paddle1.move();
         paddle2.move();

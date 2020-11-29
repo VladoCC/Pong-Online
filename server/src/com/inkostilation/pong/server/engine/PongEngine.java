@@ -47,7 +47,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
-        receiveCommand(new ResponseObjectCommand(field), channel);
+        receiveCommand(new ResponseFieldCommand(field), channel);
     }
 
     @Override

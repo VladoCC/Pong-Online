@@ -61,7 +61,7 @@ public class ServerEngine implements IEngine<Void> {
         }
         commandQueue.clear();
 
-        sendCommand(new UpdateCommand());
+        sendCommand(new UpdateFieldCommand());
 
         List<AbstractResponseCommand> commands = listen();
         for (AbstractResponseCommand command : commands) {
