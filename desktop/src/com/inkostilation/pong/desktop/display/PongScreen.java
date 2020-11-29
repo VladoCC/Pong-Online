@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.inkostilation.pong.desktop.display.shapes.BallShape;
-import com.inkostilation.pong.desktop.display.shapes.ContainerShapes;
-import com.inkostilation.pong.desktop.display.shapes.FieldShape;
-import com.inkostilation.pong.desktop.display.shapes.IShape;
+import com.inkostilation.pong.desktop.display.shapes.*;
+import com.inkostilation.pong.engine.PlayerRole;
 
 public class PongScreen implements Screen {
 
@@ -20,6 +18,8 @@ public class PongScreen implements Screen {
         FieldShape field = new FieldShape();
         rootShape.addChild(field);
         field.addChild(new BallShape());
+        field.addChild(new PaddleShape(PlayerRole.FIRST));
+        field.addChild(new PaddleShape(PlayerRole.SECOND));
     }
 
     @Override

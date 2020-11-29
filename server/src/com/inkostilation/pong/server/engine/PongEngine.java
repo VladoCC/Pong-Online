@@ -16,7 +16,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     private static IPongEngine<SocketChannel> instance = null;
 
     private Field field;
-    public Map<SocketChannel, PlayerRole> playersMap;
+    private Map<SocketChannel, PlayerRole> playersMap;
 
     private PongEngine() {
         playersMap = new HashMap<>();

@@ -74,7 +74,7 @@ public class Paddle extends Rectangle {
         return y;
     }
 
-    public PlayerRole getPlayerNumber() {
+    public PlayerRole getPlayerRole() {
         return playerNumber;
     }
 }

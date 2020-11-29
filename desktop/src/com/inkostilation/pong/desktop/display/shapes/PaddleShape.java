@@ -4,14 +4,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.inkostilation.pong.desktop.notification.ClientNotifier;
 import com.inkostilation.pong.engine.Paddle;
+import com.inkostilation.pong.engine.PlayerRole;
 import com.inkostilation.pong.notifications.IObserver;
 
 public class PaddleShape extends AbstractShape implements IObserver<Paddle> {
 
     private Paddle observable;
+    private PlayerRole role;
 
-    public PaddleShape() {
+    public PaddleShape(PlayerRole role) {
         ClientNotifier.getInstance().subscribe(this, Paddle.class);
+         this.role = role;
     }
 
     @Override
@@ -25,7 +28,9 @@ public class PaddleShape extends AbstractShape implements IObserver<Paddle> {
 
     @Override
     public void observe(Paddle observable) {
-        this.observable = observable;
-        setReady(true);
+        if (observable.getPlayerRole().equals(role)) {
+            this.observable = observable;
+            setReady(true);
+        }
     }
 }
