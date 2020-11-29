@@ -2,11 +2,11 @@ package com.inkostilation.pong.commands;
 
 import com.inkostilation.pong.notifications.INotifier;
 
-public abstract class AbstractClientCommand implements ICommand {
+public abstract class AbstractResponseCommand implements ICommand {
 
     private INotifier notifier;
 
-    public AbstractClientCommand() {
+    public AbstractResponseCommand() {
     }
 
     protected INotifier getNotifier() {

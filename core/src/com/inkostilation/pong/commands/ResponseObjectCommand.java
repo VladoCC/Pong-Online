@@ -1,12 +1,10 @@
 package com.inkostilation.pong.commands;
 
-import com.inkostilation.pong.notifications.INotifier;
-
-public class ClientObjectCommand extends AbstractClientCommand {
+public class ResponseObjectCommand extends AbstractResponseCommand {
 
     private Object object;
 
-    public ClientObjectCommand(Object object) {
+    public ResponseObjectCommand(Object object) {
         this.object = object;
     }
 

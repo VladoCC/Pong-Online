@@ -30,18 +30,18 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
-    public void receiveCommand(AbstractClientCommand command, SocketChannel channel) throws IOException {
+    public void receiveCommand(AbstractResponseCommand command, SocketChannel channel) throws IOException {
         NetworkProcessor.getInstance().sendMessage(command, channel);
     }
 
     @Override
-    public void sendCommand(AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
+    public void sendCommand(AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
         // todo temp code
         command.setEngine(this);
     }
 
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
-        receiveCommand(new ClientObjectCommand(field), channel);
+        receiveCommand(new ResponseObjectCommand(field), channel);
     }
 }

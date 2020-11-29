@@ -5,7 +5,7 @@ import com.inkostilation.pong.exceptions.NoEngineException;
 
 import java.io.IOException;
 
-public abstract class AbstractServerCommand<E extends IEngine<M>, M> implements ICommand {
+public abstract class AbstractRequestCommand<E extends IEngine<M>, M> implements ICommand {
 
     protected E engine;
     private M marker;

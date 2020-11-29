@@ -1,11 +1,10 @@
 package com.inkostilation.pong.server.network;
 
-import com.inkostilation.pong.commands.AbstractClientCommand;
-import com.inkostilation.pong.commands.AbstractServerCommand;
+import com.inkostilation.pong.commands.AbstractResponseCommand;
+import com.inkostilation.pong.commands.AbstractRequestCommand;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.processing.NetworkConnection;
 import com.inkostilation.pong.processing.Serializer;
-import com.inkostilation.pong.server.engine.PongEngine;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -93,15 +92,15 @@ public class NetworkProcessor implements IProcessor {
 
     private void receiveMessage(SelectionKey key) throws IOException {
         List<String> objects = parseObjects((SocketChannel) key.channel());
-        List<AbstractServerCommand<IEngine<SocketChannel>, SocketChannel>> commands = objects.stream()
+        List<AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>> commands = objects.stream()
                 .map(o -> {
-                    AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command = (AbstractServerCommand<IEngine<SocketChannel>, SocketChannel>) serializer.deserialize(o);
+                    AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command = (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>) serializer.deserialize(o);
                     command.setMarker((SocketChannel) key.channel());
                     return command;
                 })
                 .collect(Collectors.toList());
 
-        for (AbstractServerCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
+        for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
             try {
                 router.route(command);
             } catch (Exception e) {
@@ -115,7 +114,7 @@ public class NetworkProcessor implements IProcessor {
     }
 
     @Override
-    public void sendMessage(AbstractClientCommand command, SocketChannel channel) {
+    public void sendMessage(AbstractResponseCommand command, SocketChannel channel) {
         String message = serializer.serialize(command);
         try {
             channel.write(ByteBuffer.wrap(message.getBytes()));

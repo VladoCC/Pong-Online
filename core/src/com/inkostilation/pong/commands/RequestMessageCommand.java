@@ -2,11 +2,11 @@ package com.inkostilation.pong.commands;
 
 import com.inkostilation.pong.engine.IEngine;
 
-public class ServerMessageCommand extends AbstractServerCommand {
+public class RequestMessageCommand extends AbstractRequestCommand {
 
     private String text;
 
-    public ServerMessageCommand(String text) {
+    public RequestMessageCommand(String text) {
         this.text = text;
     }
 

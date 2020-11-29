@@ -1,7 +1,7 @@
 package com.inkostilation.pong.engine;
 
-import com.inkostilation.pong.commands.AbstractClientCommand;
-import com.inkostilation.pong.commands.AbstractServerCommand;
+import com.inkostilation.pong.commands.AbstractResponseCommand;
+import com.inkostilation.pong.commands.AbstractRequestCommand;
 import com.inkostilation.pong.exceptions.NoEngineException;
 
 import java.io.IOException;
@@ -20,12 +20,12 @@ public class NullEngine<M> implements IEngine<M> {
     }
 
     @Override
-    public void receiveCommand(AbstractClientCommand command, Object mark) throws IOException, NoEngineException {
+    public void receiveCommand(AbstractResponseCommand command, Object mark) throws IOException, NoEngineException {
 
     }
 
     @Override
-    public void sendCommand(AbstractServerCommand<IEngine<M>, M> command) throws IOException, NoEngineException {
+    public void sendCommand(AbstractRequestCommand<IEngine<M>, M> command) throws IOException, NoEngineException {
 
     }
 }
