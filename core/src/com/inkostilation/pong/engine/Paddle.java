@@ -18,10 +18,21 @@ public class Paddle extends Rectangle {
 
     private float x, y, yVel = 0;
     private Direction accelerationDirection;
+    private PlayerRole playerNumber;
 
     public Paddle(float x, float y) {
         accelerationDirection = Direction.IDLE;
-
+        /*switch (player)
+        {
+            case 1: {
+                this.playerNumber = PlayerRole.FIRST;
+                break;
+            }
+            case 2: {
+                this.playerNumber = PlayerRole.SECOND;
+                break;
+            }
+        }*/
         this.x = x;
         this.y = y;
     }
@@ -72,5 +83,9 @@ public class Paddle extends Rectangle {
 
     public float getY() {
         return y;
+    }
+
+    public PlayerRole getPlayerNumber() {
+        return playerNumber;
     }
 }

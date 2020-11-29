@@ -11,4 +11,6 @@ public interface IPongEngine<M> extends IEngine<M> {
     void sendCommand(AbstractRequestCommand<IEngine<M>, M> command) throws IOException, NoEngineException;
 
     void sendFieldState(M marker) throws IOException;
+
+    void sendPlayerRole(M marker) throws IOException;
 }

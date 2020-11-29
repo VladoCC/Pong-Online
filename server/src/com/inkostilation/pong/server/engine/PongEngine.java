@@ -13,6 +13,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     private static IPongEngine<SocketChannel> instance = null;
 
     private Field field;
+    private static int playersCount = 0;
 
     private PongEngine() {
         field = new Field();
@@ -43,5 +44,11 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
         receiveCommand(new ResponseObjectCommand(field), channel);
+    }
+
+    @Override
+    public void sendPlayerRole(SocketChannel channel) throws IOException {
+        playersCount++;
+        receiveCommand(new ResponsePlayerRoleCommand(playersCount), channel);
     }
 }

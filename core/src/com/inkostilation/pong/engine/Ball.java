@@ -31,7 +31,7 @@ public class Ball {
     }
 
     public boolean isColliding(Paddle paddle, int width) {
-        if (paddle.getX() < width / 2 ) {
+        if ((paddle.getX() < width / 2)) {
             if (x <= paddle.getX() + paddle.getWidth() + radius)
                 return y >= paddle.getY() && y <= paddle.getY() + paddle.getHeight();
             return false;
