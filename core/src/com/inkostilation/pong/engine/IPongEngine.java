@@ -15,4 +15,6 @@ public interface IPongEngine<M> extends IEngine<M> {
     void sendPlayerRole(M marker) throws IOException;
 
     void assignPlayerRole(M marker) throws IOException;
+
+    void removePlayer(M marker) throws IOException;
 }
