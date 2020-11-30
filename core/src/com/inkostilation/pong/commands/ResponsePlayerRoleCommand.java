@@ -13,6 +13,6 @@ public class ResponsePlayerRoleCommand extends AbstractResponseCommand{
 
     @Override
     public void execute() {
-        //something
+
     }
 }
