@@ -4,7 +4,7 @@ public class Paddle extends Rectangle {
 
     private PlayerRole playerRole;
 
-    private boolean сontrolled;
+    private boolean controlled;
 
     public Paddle(float x, float y) {
         super(x, y, 20, 80);
@@ -17,6 +17,10 @@ public class Paddle extends Rectangle {
     public void setPlayerRole(PlayerRole playerRole) { this.playerRole = playerRole; }
 
     public void setControlled(boolean controlled) {
-        this.сontrolled = controlled;
+        this.controlled = controlled;
+    }
+
+    public boolean isControlled() {
+        return controlled;
     }
 }

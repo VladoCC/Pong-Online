@@ -2,7 +2,8 @@ package com.inkostilation.pong.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.inkostilation.pong.desktop.display.PongMain;
+import com.inkostilation.pong.desktop.network.Network;
+import com.inkostilation.pong.desktop.network.ServerEngine;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

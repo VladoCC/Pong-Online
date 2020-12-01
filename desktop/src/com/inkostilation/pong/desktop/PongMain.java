@@ -1,4 +1,4 @@
-package com.inkostilation.pong.desktop.display;
+package com.inkostilation.pong.desktop;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.inkostilation.pong.desktop.display.PongScreen;
 import com.inkostilation.pong.desktop.network.Network;
+import com.inkostilation.pong.desktop.network.ServerThread;
 import com.inkostilation.pong.engine.Ball;
 import com.inkostilation.pong.engine.Field;
 import com.inkostilation.pong.engine.IEngine;
@@ -18,16 +20,17 @@ public class PongMain extends Game {
 	@Override
 	public void create () {
 		setScreen(new PongScreen());
+		ServerThread.getInstance().start();
 	}
 
 	@Override
 	public void render () {
 		super.render();
-		Network.getEngine().act();
 	}
 	
 	@Override
 	public void dispose () {
 		super.dispose();
+		ServerThread.getInstance().stopServer();
 	}
 }

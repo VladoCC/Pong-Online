@@ -28,4 +28,9 @@ public class NullEngine<M> implements IEngine<M> {
     public void sendCommand(AbstractRequestCommand<IEngine<M>, M>... command) throws IOException, NoEngineException {
 
     }
+
+    @Override
+    public void quit(M marker) throws IOException {
+
+    }
 }

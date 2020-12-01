@@ -33,7 +33,7 @@ public class ServerEngine implements IEngine<Void> {
         serializer = new Serializer();
     }
 
-    public void addCommandToQueue(AbstractRequestCommand command) {
+    private void addCommandToQueue(AbstractRequestCommand command) {
         commandQueue.add(command);
     }
 
@@ -58,12 +58,8 @@ public class ServerEngine implements IEngine<Void> {
     }
 
     private void communicate() throws IOException, NoEngineException {
-        commandQueue.add(new UpdateFieldCommand());
-        AbstractRequestCommand[] requestCommands = new AbstractRequestCommand[commandQueue.size()];
-        for (int i = 0; i < commandQueue.size(); i++) {
-            requestCommands[i] = commandQueue.get(i);
-        }
-        sendCommand(requestCommands);
+        addCommandToQueue(new UpdateFieldCommand());
+        sendQueuedCommmands();
         commandQueue.clear();
 
         List<AbstractResponseCommand> commands = listen();
@@ -95,9 +91,19 @@ public class ServerEngine implements IEngine<Void> {
     }
 
     @Override
-    public void sendCommand(AbstractRequestCommand... commands) throws IOException {
+    public void quit(Void marker) throws IOException {
+        addCommandToQueue(new QuitCommand());
+        sendQueuedCommmands();
+    }
+
+    @Override
+    public void sendCommand(AbstractRequestCommand... commands) {
+        commandQueue.addAll(Arrays.asList(commands));
+    }
+
+    private void sendQueuedCommmands() throws IOException {
         StringBuilder msg = new StringBuilder();
-        for (AbstractRequestCommand command: commands) {
+        for (AbstractRequestCommand command: commandQueue) {
             msg.append(serializer.serialize(command));
         }
         channel.write(ByteBuffer.wrap(msg.toString().getBytes()));

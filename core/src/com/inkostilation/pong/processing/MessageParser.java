@@ -47,7 +47,7 @@ public class MessageParser {
 
     public void addParcel(ByteBuffer parcel) throws EmptyParcelException {
         int pos = parcel.position();
-        String newParcel = new String(parcel.array()).trim().substring(0, pos);
+        String newParcel = new String(parcel.array()).substring(0, pos);
         if (newParcel.length() == 0) {
             throw new EmptyParcelException();
         }

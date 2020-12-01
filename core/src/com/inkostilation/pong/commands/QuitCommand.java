@@ -9,6 +9,7 @@ public class QuitCommand extends AbstractRequestCommand<IEngine<SocketChannel>, 
     @Override
     public void execute(IEngine<SocketChannel> engine) {
         try {
+            getEngine().quit(getMarker());
             getMarker().close();
         } catch (IOException e) {
             e.printStackTrace();

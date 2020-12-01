@@ -7,6 +7,6 @@ import java.io.IOException;
 public class ExitGameCommand <M> extends AbstractPongCommand<M> {
     @Override
     public void execute(IPongEngine engine) throws IOException {
-        getEngine().removePlayer(getMarker());
+        getEngine().quit(getMarker());
     }
 }

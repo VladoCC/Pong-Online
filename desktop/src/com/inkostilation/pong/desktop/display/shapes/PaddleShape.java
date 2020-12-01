@@ -19,10 +19,12 @@ public class PaddleShape extends AbstractShape implements IObserver<Paddle> {
 
     @Override
     public Position draw(Position position, ShapeRenderer renderer) {
-        renderer.setColor(Color.WHITE);
-        renderer.set(ShapeRenderer.ShapeType.Filled);
-        renderer.rect(position.getX() + observable.getX(), position.getY() + observable.getY(),
-                observable.getWidth(), observable.getHeight());
+        if (observable.isControlled()) {
+            renderer.setColor(Color.WHITE);
+            renderer.set(ShapeRenderer.ShapeType.Filled);
+            renderer.rect(position.getX() + observable.getX(), position.getY() + observable.getY(),
+                    observable.getWidth(), observable.getHeight());
+        }
         return position;
     }
 

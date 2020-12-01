@@ -49,6 +49,11 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
+    public void quit(SocketChannel channel) throws IOException {
+        removePlayer(channel);
+    }
+
+    @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
         receiveCommand(new ResponseFieldCommand(field), channel);
     }
@@ -89,8 +94,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         }
     }
 
-    @Override
-    public void removePlayer(SocketChannel channel) throws IOException {
+    private void removePlayer(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
             switch ((playersMap.get(channel).number)) {
                 case 1: {
