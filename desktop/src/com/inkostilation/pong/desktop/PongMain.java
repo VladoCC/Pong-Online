@@ -32,5 +32,12 @@ public class PongMain extends Game {
 	public void dispose () {
 		super.dispose();
 		ServerThread.getInstance().stopServer();
+		while (!ServerThread.getInstance().isFinished()) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

@@ -135,14 +135,16 @@ public class NetworkProcessor implements IProcessor {
 
     private void sendAll() {
         for (Map.Entry<SocketChannel, List<AbstractResponseCommand>> entry: commandQueue.entrySet()) {
-            StringBuilder message = new StringBuilder();
-            for (AbstractResponseCommand command: entry.getValue()) {
-                message.append(serializer.serialize(command));
-            }
-            try {
-                entry.getKey().write(ByteBuffer.wrap(message.toString().getBytes()));
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (entry.getKey().isConnected()) {
+                StringBuilder message = new StringBuilder();
+                for (AbstractResponseCommand command : entry.getValue()) {
+                    message.append(serializer.serialize(command));
+                }
+                try {
+                    entry.getKey().write(ByteBuffer.wrap(message.toString().getBytes()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

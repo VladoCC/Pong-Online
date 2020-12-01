@@ -5,6 +5,7 @@ import java.io.IOException;
 public class ServerThread extends Thread {
 
     private boolean active = false;
+    private boolean finished = false;
 
     private static ServerThread instance;
 
@@ -33,9 +34,15 @@ public class ServerThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        finished = true;
     }
 
     public void stopServer() {
         this.active = false;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 }
