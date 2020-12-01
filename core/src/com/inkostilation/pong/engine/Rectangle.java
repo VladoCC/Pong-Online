@@ -9,16 +9,6 @@ public class Rectangle implements IGeometricShape{
 
     private float x, y, yVel, width, height;
 
-    public enum Direction {
-        UP(-1), DOWN(1), IDLE(0);
-
-        public final int value;
-
-        Direction(int dir) {
-            value = dir;
-        }
-    }
-
     private Direction accelerationDirection;
 
     public void setAccelerationDirection(Direction accelerationDirection) {

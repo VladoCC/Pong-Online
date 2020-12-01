@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.inkostilation.pong.commands.ExitGameCommand;
+import com.inkostilation.pong.commands.RequestInputActionCommand;
+import com.inkostilation.pong.desktop.controls.InputSystem;
 import com.inkostilation.pong.desktop.display.shapes.*;
 import com.inkostilation.pong.desktop.network.Network;
 import com.inkostilation.pong.engine.PlayerRole;
@@ -26,16 +28,31 @@ public class PongScreen implements Screen {
         field.addChild(new BallShape());
         field.addChild(new PaddleShape(PlayerRole.FIRST));
         field.addChild(new PaddleShape(PlayerRole.SECOND));
+
+        Gdx.input.setInputProcessor(new InputSystem());
     }
 
     @Override
     public void render(float delta) {
+        updateControls();
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLACK);
         rootShape.drawShapeTree(new IShape.Position(0, 0), shapeRenderer);
         shapeRenderer.end();
+    }
+
+    private void updateControls() {
+        InputSystem system = (InputSystem) Gdx.input.getInputProcessor();
+        if (system.isChanged()) {
+            try {
+                Network.getEngine().sendCommand(new RequestInputActionCommand(system.getDirection()));
+            } catch (IOException | NoEngineException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

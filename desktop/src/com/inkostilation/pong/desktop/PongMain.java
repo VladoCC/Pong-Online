@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.inkostilation.pong.desktop.controls.InputSystem;
 import com.inkostilation.pong.desktop.display.PongScreen;
 import com.inkostilation.pong.desktop.network.Network;
 import com.inkostilation.pong.desktop.network.ServerThread;

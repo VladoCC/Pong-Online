@@ -88,6 +88,26 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
+    public void applyInput(Direction direction, SocketChannel marker) {
+        PlayerRole role = playersMap.get(marker);
+        Paddle paddle = null;
+        boolean allowed = true;
+        switch (role) {
+            case FIRST:
+                paddle = field.getPaddle1();
+                break;
+            case SECOND:
+                paddle = field.getPaddle2();
+                break;
+            default:
+                allowed = false;
+        }
+        if (allowed) {
+            paddle.setAccelerationDirection(direction);
+        }
+    }
+
+    @Override
     public void sendPlayerRole(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
             receiveCommand(new ResponsePlayerRoleCommand(playersMap.get(channel)), channel);
