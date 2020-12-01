@@ -65,7 +65,7 @@ public class NetworkProcessor implements IProcessor {
     public void processConnections() {
         try {
             if (started) {
-                selector.select();
+                selector.select(10);
                 final Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 final Iterator<SelectionKey> iter = selectedKeys.iterator();
                 while (iter.hasNext()) {

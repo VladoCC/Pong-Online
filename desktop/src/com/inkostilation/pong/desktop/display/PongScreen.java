@@ -55,7 +55,7 @@ public class PongScreen implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
