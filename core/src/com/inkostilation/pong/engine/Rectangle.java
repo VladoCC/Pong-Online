@@ -5,24 +5,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Rectangle implements IGeometricShape{
 
-    private static final float FRICTION = 0.94f;
-
-    private float x, y, yVel, width, height;
-
-    private Direction accelerationDirection;
-
-    public void setAccelerationDirection(Direction accelerationDirection) {
-        this.accelerationDirection = accelerationDirection;
-    }
+    private float x, y, width, height;
 
     public Rectangle (float x, float y, float width, float height)
     {
         this.x = x;
         this.y = y;
-        this.yVel = 0;
         this.width = width;
         this.height = height;
-        accelerationDirection = Direction.IDLE;
     }
 
     public float getX() {
@@ -57,19 +47,7 @@ public class Rectangle implements IGeometricShape{
         return true;
     }
 
-    @Override
-    public void move() {
-        int dir = accelerationDirection.value;
-        if (dir != 0)
-            yVel += 2 * dir;
-        else
-            yVel *= FRICTION;
-
-        if (yVel >= 5)
-            yVel = 5;
-        else if (yVel <= -5)
-            yVel = -5;
-
-        y += yVel;
+    public void setY(float y) {
+        this.y = y;
     }
 }

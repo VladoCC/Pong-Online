@@ -2,12 +2,24 @@ package com.inkostilation.pong.engine;
 
 public class Paddle extends Rectangle {
 
+    private static final float FRICTION = 0.94f;
+
+    private float yVel;
+
     private PlayerRole playerRole;
 
     private boolean controlled;
 
+    private Direction accelerationDirection;
+
     public Paddle(float x, float y) {
         super(x, y, 20, 80);
+        this.yVel = 0;
+        accelerationDirection = Direction.IDLE;
+    }
+
+    public void setAccelerationDirection(Direction accelerationDirection) {
+        this.accelerationDirection = accelerationDirection;
     }
 
     public PlayerRole getPlayerRole() {
@@ -22,5 +34,20 @@ public class Paddle extends Rectangle {
 
     public boolean isControlled() {
         return controlled;
+    }
+
+    public void move() {
+        int dir = accelerationDirection.value;
+        if (dir != 0)
+            yVel += 2 * dir;
+        else
+            yVel *= FRICTION;
+
+        if (yVel >= 5)
+            yVel = 5;
+        else if (yVel <= -5)
+            yVel = -5;
+
+        setY(getY()+yVel);
     }
 }

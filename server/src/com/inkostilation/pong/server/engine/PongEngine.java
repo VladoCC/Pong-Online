@@ -72,10 +72,19 @@ public class PongEngine implements IPongEngine<SocketChannel> {
                 break;
             }
             case 1: {
-                player = PlayerRole.SECOND;
-                playersMap.put(channel, player);
-                field.getPaddle2().setPlayerRole(player);
-                field.getPaddle2().setControlled(true);
+                if (!(playersMap.containsValue(PlayerRole.SECOND))) {
+                    player = PlayerRole.SECOND;
+                    playersMap.put(channel, player);
+                    field.getPaddle2().setPlayerRole(player);
+                    field.getPaddle2().setControlled(true);
+                }
+                else
+                {
+                    player = PlayerRole.FIRST;
+                    playersMap.put(channel, player);
+                    field.getPaddle1().setPlayerRole(player);
+                    field.getPaddle1().setControlled(true);
+                }
                 break;
             }
             default: {
@@ -116,12 +125,12 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     private void removePlayer(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
-            switch ((playersMap.get(channel).number)) {
-                case 1: {
+            switch ((playersMap.get(channel))) {
+                case FIRST: {
                     field.getPaddle1().setControlled(false);
                     break;
                 }
-                case 2: {
+                case SECOND: {
                     field.getPaddle2().setControlled(false);
                     break;
                 }
