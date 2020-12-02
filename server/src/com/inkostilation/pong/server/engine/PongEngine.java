@@ -42,7 +42,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void sendCommand(AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>... commands) throws IOException, NoEngineException {
         // todo temp code
-        for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
+        for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command : commands) {
             command.setEngine(this);
             command.execute();
         }
@@ -62,13 +62,11 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     public void assignPlayerRole(SocketChannel channel) throws IOException {
         int playersNumber = playersMap.size();
         PlayerRole player;
-        switch (playersNumber)
-        {
+        switch (playersNumber) {
             case 0: {
                 player = PlayerRole.FIRST;
                 playersMap.put(channel, player);
                 field.getPaddle1().setPlayerRole(player);
-                field.getPaddle1().setControlled(true);
                 break;
             }
             case 1: {
@@ -76,14 +74,10 @@ public class PongEngine implements IPongEngine<SocketChannel> {
                     player = PlayerRole.SECOND;
                     playersMap.put(channel, player);
                     field.getPaddle2().setPlayerRole(player);
-                    field.getPaddle2().setControlled(true);
-                }
-                else
-                {
+                } else {
                     player = PlayerRole.FIRST;
                     playersMap.put(channel, player);
                     field.getPaddle1().setPlayerRole(player);
-                    field.getPaddle1().setControlled(true);
                 }
                 break;
             }
@@ -138,5 +132,27 @@ public class PongEngine implements IPongEngine<SocketChannel> {
             playersMap.remove(channel);
         }
         receiveCommand(new ResponseMessageCommand("Exit success!"), channel);
+    }
+
+    @Override
+    public void startGame(SocketChannel channel) throws IOException {
+        Game newGame = new Game();
+        newGame.start();
+    }
+
+    @Override
+    public void confirmReadiness(SocketChannel channel) throws IOException {
+        if (playersMap.containsKey(channel)) {
+            switch ((playersMap.get(channel))) {
+                case FIRST: {
+                    field.getPaddle1().setControlled(true);
+                    break;
+                }
+                case SECOND: {
+                    field.getPaddle2().setControlled(true);
+                    break;
+                }
+            }
+        }
     }
 }

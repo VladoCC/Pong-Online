@@ -4,9 +4,9 @@ import com.inkostilation.pong.engine.IPongEngine;
 
 import java.io.IOException;
 
-public class StartGameCommand<M> extends AbstractPongCommand<M> {
+public class RequestReadinessCommand<M> extends AbstractPongCommand<M> {
     @Override
     public void execute(IPongEngine engine) throws IOException {
-        getEngine().startGame(getMarker());
+        getEngine().confirmReadiness(getMarker());
     }
 }

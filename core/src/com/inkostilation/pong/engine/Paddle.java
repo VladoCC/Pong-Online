@@ -16,6 +16,7 @@ public class Paddle extends Rectangle {
         super(x, y, 20, 80);
         this.yVel = 0;
         accelerationDirection = Direction.IDLE;
+        this.controlled = false;
     }
 
     public void setAccelerationDirection(Direction accelerationDirection) {

@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +53,7 @@ public class ServerEngine implements IEngine<Void> {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
 
         connected = true;
-        addCommandToQueue(new StartGameCommand());
+        addCommandToQueue(new AssignRoleCommand());
     }
 
     private void communicate() throws IOException, NoEngineException {

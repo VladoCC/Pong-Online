@@ -11,4 +11,6 @@ public interface IPongEngine<M> extends IEngine<M> {
     void sendPlayerRole(M marker) throws IOException;
     void assignPlayerRole(M marker) throws IOException;
     void applyInput(Direction direction, M marker);
+    void startGame(M marker) throws IOException;
+    void confirmReadiness(M Marker) throws IOException;
 }
