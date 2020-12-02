@@ -1,6 +1,5 @@
 package com.inkostilation.pong.engine;
 
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class Game {
         this.score = new Score();
     }
 
-    private static List<Game> gameList = new ArrayList<>();
+    private static List<Game> activeGamesList = new ArrayList<>();
 
     public Field getField() {
         return field;
@@ -27,38 +26,31 @@ public class Game {
     }
 
     public void start() {
-        gameList.add(this);
+        activeGamesList.add(this);
     }
     
     public void end() {
-        gameList.remove(this);
+        activeGamesList.remove(this);
     }
 
-    public boolean endOfSet() {
-        if (!field.getBall().isInBounds(field.getWidth()))
-        {
-            if (field.getBall().getX() < 0)
-                score.addPlayer1Score(1);
-            else
-                score.addPlayer2Score(1);
-            return true;
-        }
-        return false;
+    public void scorePoint(PlayerRole role) {
+        score.addPlayerScore(role, 1);
     }
 
     public void update() {
-        while (this.score.getPlayer1Score() != score.getMaxScoreValue() || this.score.getPlayer2Score() != score.getMaxScoreValue()) {
+        while (score.getMaxValueCount() == 0) {
             field.run();
-            if (this.endOfSet()) {
+            if (!field.isBallInBounds()) {
+                scorePoint(field.getBall().getX() < 0? PlayerRole.FIRST : PlayerRole.SECOND);
                 field.getPaddle1().setControlled(false);
                 field.getPaddle2().setControlled(false);
             }
         }
-        winner = (this.score.getPlayer1Score() == score.getMaxScoreValue()) ? PlayerRole.FIRST : PlayerRole.SECOND;
-        this.end();
+        winner = score.getMaxedPlayers().get(0);
+        end();
     }
 
     public Game getGameAt(int index) {
-        return gameList.get(index);
+        return activeGamesList.get(index);
     }
 }

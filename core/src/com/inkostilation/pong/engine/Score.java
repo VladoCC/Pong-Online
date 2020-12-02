@@ -1,34 +1,46 @@
 package com.inkostilation.pong.engine;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class Score {
 
     private final int maxScoreValue = 5;
-    private int player1Score, player2Score;
+    private Map<PlayerRole, Integer> points = new HashMap<>();
 
     public Score() {
-        this.player1Score = 0;
-        this.player2Score = 0;
+        points.put(PlayerRole.FIRST, 0);
+        points.put(PlayerRole.SECOND, 0);
     }
 
-    public int getPlayer1Score() {
-        return player1Score;
-    }
-
-    public int getPlayer2Score() {
-        return player2Score;
+    public int getPlayerScore(PlayerRole role) {
+        return points.get(role);
     }
 
     public int getMaxScoreValue() {
         return maxScoreValue;
     }
 
-    public void addPlayer1Score(int value)
+    public void addPlayerScore(PlayerRole role, int add)
     {
-        player1Score+=value;
+        int val = points.get(role);
+        points.replace(role, val + add);
     }
 
-    public void addPlayer2Score(int value)
-    {
-        player2Score+=value;
+    public long getMaxValueCount() {
+        return points.values()
+                .stream()
+                .filter(o -> o >= getMaxValueCount())
+                .count();
+    }
+
+    public List<PlayerRole> getMaxedPlayers() {
+        return points.entrySet()
+                .stream()
+                .filter(o -> o.getValue() >= getMaxValueCount())
+                .map(o -> o.getKey())
+                .collect(Collectors.toList());
     }
 }

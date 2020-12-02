@@ -32,6 +32,10 @@ public class Field {
         return ball;
     }
 
+    public boolean isBallInBounds() {
+        return getBall().isInBounds(getWidth());
+    }
+
     public void run() {
         paddle1.move();
         paddle2.move();
