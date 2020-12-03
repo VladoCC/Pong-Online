@@ -1,26 +1,14 @@
 package com.inkostilation.pong.engine;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+public class Rectangle extends AbstractGeometricShape {
 
-public class Rectangle implements IGeometricShape{
-
-    private float x, y, width, height;
+    private float width, height;
 
     public Rectangle (float x, float y, float width, float height)
     {
-        this.x = x;
-        this.y = y;
+        super(x,y);
         this.width = width;
         this.height = height;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
     }
 
     public float getWidth() {
@@ -31,23 +19,20 @@ public class Rectangle implements IGeometricShape{
         return height;
     }
 
-    public void constrain(int fieldHeight)
+    public void constrain(float fieldHeight)
     {
-        if (y < 0) {
-            y = 0;
-        } else if (y > fieldHeight - height) {
-            y = fieldHeight - height;
+        if (getY() < 0) {
+            setY(0);
+        } else if (getY() > fieldHeight - height) {
+            setY(fieldHeight - height);
         }
     }
 
     @Override
-    public boolean isInBounds(int fieldHeight) {
-        if ((y < 0) || (y > fieldHeight - height))
+    public boolean isInBounds(Rectangle field) {
+        if ((getY() < 0) || (getY() > field.height - height))
             return false;
         return true;
     }
 
-    public void setY(float y) {
-        this.y = y;
-    }
 }

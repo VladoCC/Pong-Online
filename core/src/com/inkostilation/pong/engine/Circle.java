@@ -1,24 +1,8 @@
 package com.inkostilation.pong.engine;
 
-public class Circle implements IGeometricShape {
+public class Circle extends AbstractGeometricShape {
 
-    private float x, y, radius;
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
+    private float radius;
 
     public float getRadius() {
         return radius;
@@ -30,24 +14,19 @@ public class Circle implements IGeometricShape {
 
     public Circle(float x, float y, float radius)
     {
-        this.x = x;
-        this.y = y;
+        super(x,y);
         this.radius = radius;
     }
 
-    public boolean isColliding(Rectangle rectangle, int fieldWidth) {
-        if ((rectangle.getX() < fieldWidth / 2)) {
-            if (x <= rectangle.getX() + rectangle.getWidth() + radius)
-                return y >= rectangle.getY() && y <= rectangle.getY() + rectangle.getHeight();
-            return false;
-        } else if (x >= rectangle.getX() - radius)
-            return y >= rectangle.getY() && y <= rectangle.getY() + rectangle.getHeight();
+    public boolean isColliding(Rectangle rectangle) {
+        if (getY() >= rectangle.getY() && getY() <= rectangle.getY() + rectangle.getHeight() && (getX() <= rectangle.getX() + rectangle.getWidth() + radius || getX()>= rectangle.getX() - radius))
+                return true;
         return false;
     }
 
     @Override
-    public boolean isInBounds(int fieldWidth) {
-        if ((y < radius) || (y > fieldWidth - radius))
+    public boolean isInBounds(Rectangle rectangle) {
+        if ((getX() < radius) || (getX() > rectangle.getWidth() - radius))
             return false;
         return true;
     }

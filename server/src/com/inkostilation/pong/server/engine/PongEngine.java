@@ -16,7 +16,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     private static IPongEngine<SocketChannel> instance = null;
 
     private Field field;
-    private Map<SocketChannel, PlayerRole> playersMap;
+    private Map<SocketChannel, PlayerData> playersMap;
 
     private PongEngine() {
         playersMap = new HashMap<>();
@@ -59,40 +59,42 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
-    public void assignPlayerRole(SocketChannel channel) throws IOException {
-        int playersNumber = playersMap.size();
-        PlayerRole player;
-        switch (playersNumber) {
-            case 0: {
-                player = PlayerRole.FIRST;
-                playersMap.put(channel, player);
-                field.getPaddle1().setPlayerRole(player);
-                break;
-            }
-            case 1: {
-                if (!(playersMap.containsValue(PlayerRole.SECOND))) {
-                    player = PlayerRole.SECOND;
-                    playersMap.put(channel, player);
-                    field.getPaddle2().setPlayerRole(player);
-                } else {
+    public void prepare(SocketChannel channel) throws IOException {
+        if (playersMap.containsKey(channel)) {
+            int playersNumber = playersMap.size();
+            PlayerRole player;
+            switch (playersNumber) {
+                case 0: {
                     player = PlayerRole.FIRST;
-                    playersMap.put(channel, player);
+                    playersMap.get(channel).setPlayerRole(player);
                     field.getPaddle1().setPlayerRole(player);
+                    break;
                 }
-                break;
+                case 1: {
+                    if (!(playersMap.containsValue(PlayerRole.SECOND))) {
+                        player = PlayerRole.SECOND;
+                        playersMap.get(channel).setPlayerRole(player);
+                        field.getPaddle2().setPlayerRole(player);
+                    } else {
+                        player = PlayerRole.FIRST;
+                        playersMap.get(channel).setPlayerRole(player);
+                        field.getPaddle1().setPlayerRole(player);
+                    }
+                    break;
+                }
+                default: {
+                    player = PlayerRole.DENIED;
+                    playersMap.get(channel).setPlayerRole(player);
+                    break;
+                }
             }
-            default: {
-                player = PlayerRole.DENIED;
-                playersMap.put(channel, player);
-                break;
-            }
+            receiveCommand(new ResponseObjectCommand(player), channel);
         }
-        receiveCommand(new ResponseObjectCommand(player), channel);
     }
 
     @Override
     public void applyInput(Direction direction, SocketChannel marker) {
-        PlayerRole role = playersMap.get(marker);
+        PlayerRole role = playersMap.get(marker).getPlayerRole();
         Paddle paddle = null;
         boolean allowed = true;
         switch (role) {
@@ -113,13 +115,13 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void sendPlayerRole(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
-            receiveCommand(new ResponsePlayerRoleCommand(playersMap.get(channel)), channel);
+            receiveCommand(new ResponsePlayerRoleCommand(playersMap.get(channel).getPlayerRole()), channel);
         }
     }
 
     private void removePlayer(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
-            switch ((playersMap.get(channel))) {
+            switch ((playersMap.get(channel)).getPlayerRole()) {
                 case FIRST: {
                     field.getPaddle1().setControlled(false);
                     break;
@@ -135,15 +137,19 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
-    public void startGame(SocketChannel channel) throws IOException {
-        Game newGame = new Game();
-        newGame.start();
+    public void create(SocketChannel channel) throws IOException {
+        if (!playersMap.containsKey(channel)) {
+            Game newGame = new Game();
+            playersMap.put(channel, new PlayerData(newGame, null));
+        }
+        else
+            receiveCommand(new ResponseMessageCommand("You are playing a game!"), channel);
     }
 
     @Override
-    public void confirmReadiness(SocketChannel channel) throws IOException {
+    public void confirm(SocketChannel channel) {
         if (playersMap.containsKey(channel)) {
-            switch ((playersMap.get(channel))) {
+            switch ((playersMap.get(channel)).getPlayerRole()) {
                 case FIRST: {
                     field.getPaddle1().setControlled(true);
                     break;
@@ -154,5 +160,11 @@ public class PongEngine implements IPongEngine<SocketChannel> {
                 }
             }
         }
+    }
+
+    @Override
+    public void start(SocketChannel channel) {
+        if (playersMap.containsKey(channel))
+            playersMap.get(channel).getGame().start();
     }
 }

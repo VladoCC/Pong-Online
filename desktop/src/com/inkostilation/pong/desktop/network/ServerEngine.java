@@ -53,7 +53,7 @@ public class ServerEngine implements IEngine<Void> {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
 
         connected = true;
-        addCommandToQueue(new AssignRoleCommand());
+        addCommandToQueue(new PrepareCommand());
     }
 
     private void communicate() throws IOException, NoEngineException {

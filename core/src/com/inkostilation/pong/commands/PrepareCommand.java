@@ -4,9 +4,9 @@ import com.inkostilation.pong.engine.IPongEngine;
 
 import java.io.IOException;
 
-public class AssignRoleCommand<M> extends AbstractPongCommand<M> {
+public class PrepareCommand<M> extends AbstractPongCommand<M> {
     @Override
     public void execute(IPongEngine engine) throws IOException {
-        getEngine().assignPlayerRole(getMarker());
+        getEngine().prepare(getMarker());
     }
 }
