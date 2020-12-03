@@ -34,9 +34,9 @@ public class Field extends Rectangle {
         paddle2.move();
         ball.move();
         if (!paddle1.isInBounds(this))
-            paddle1.constrain(getHeight());
+            paddle1.constrain(this);
         if (!paddle2.isInBounds(this))
-            paddle2.constrain(getHeight());
+            paddle2.constrain(this);
         if (!ball.isInBounds(this))
             ball.constrain();
         if (ball.isColliding(paddle1))

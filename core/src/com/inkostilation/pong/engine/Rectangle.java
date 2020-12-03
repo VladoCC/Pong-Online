@@ -19,15 +19,6 @@ public class Rectangle extends AbstractGeometricShape {
         return height;
     }
 
-    public void constrain(float fieldHeight)
-    {
-        if (getY() < 0) {
-            setY(0);
-        } else if (getY() > fieldHeight - height) {
-            setY(fieldHeight - height);
-        }
-    }
-
     @Override
     public boolean isInBounds(Rectangle field) {
         if ((getY() < 0) || (getY() > field.height - height))

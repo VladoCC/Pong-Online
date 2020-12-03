@@ -51,4 +51,14 @@ public class Paddle extends Rectangle {
 
         setY(getY()+yVel);
     }
+
+    public void constrain(Rectangle rectangle)
+    {
+        if (getY() < 0) {
+            setY(0);
+        }
+        else if (getY() > rectangle.getHeight() - getHeight()) {
+            setY(rectangle.getHeight() - getHeight());
+        }
+    }
 }
