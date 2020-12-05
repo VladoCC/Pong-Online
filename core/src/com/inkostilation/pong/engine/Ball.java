@@ -1,5 +1,8 @@
 package com.inkostilation.pong.engine;
 
+import com.inkostilation.pong.engine.geometry.Circle;
+import com.inkostilation.pong.engine.geometry.Rectangle;
+
 import java.util.Random;
 
 import static java.lang.Math.PI;
@@ -8,17 +11,36 @@ public class Ball extends Circle {
 
     private static final float MAXBOUNCEANGLE = (float) (5*PI/12);
 
-    private float xVel, yVel;
+    private float velocity = 3f;
+    private float xVel, yVel, defaultX, defaultY;
+
+
+    public enum Direction {
+        LEFT(-1), RIGHT(1);
+
+        public final int value;
+
+        Direction(int value) {
+            this.value = value;
+        }
+    }
 
     public Ball(float x, float y) {
         super(x,y, 10);
-        this.xVel = getRandomSpeed() * getRandomDirection();
-        this.yVel = getRandomSpeed() * getRandomDirection();
+        defaultX = x;
+        defaultY = y;
+        this.xVel = velocity * getRandomDirection();
+        this.yVel = velocity * getRandomDirection();
     }
 
-    private float getRandomSpeed()
-    {
-        return new Random().nextFloat() * 3 + 2;
+    public void resetPosition() {
+        setX(defaultX);
+        setY(defaultY);
+    }
+
+    public void resetVelocity(Direction direction) {
+        yVel = 0;
+        xVel = velocity * direction.value;
     }
 
     private int getRandomDirection() {
@@ -29,20 +51,27 @@ public class Ball extends Circle {
     }
 
     public void applyCollision(Rectangle rectangle) {
-        float relativeIntersectY = (rectangle.getY()+(rectangle.getHeight()/2)) - getY();
-        float normalizedRelativeIntersectionY = (relativeIntersectY/(rectangle.getHeight()/2));
+        float relativeIntersectY = rectangle.getY() + rectangle.getHeight() / 2 - getY();
+        float normalizedRelativeIntersectionY = 2 * relativeIntersectY / rectangle.getHeight();
         float bounceAngle = normalizedRelativeIntersectionY * MAXBOUNCEANGLE;
-        xVel = (float) (xVel*Math.cos(bounceAngle));
-        yVel = (float) (yVel*-Math.sin(bounceAngle));
+
+        int newDir = xVel > 0? -1 : 1;
+
+        xVel = (float) (newDir * velocity * Math.cos(bounceAngle));
+        yVel = (float) (-velocity * Math.sin(bounceAngle));
     }
 
     public void move() {
-        setX(getX()+xVel);
-        setY(getY()+yVel);
+        setX(getX() + xVel);
+        setY(getY() + yVel);
     }
 
     public void constrain()
     {
         yVel = -yVel;
+    }
+
+    public void setVelocity(float velocity) {
+        this.velocity = velocity;
     }
 }

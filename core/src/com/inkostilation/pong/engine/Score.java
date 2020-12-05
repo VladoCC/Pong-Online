@@ -32,14 +32,14 @@ public class Score {
     public long getMaxValueCount() {
         return points.values()
                 .stream()
-                .filter(o -> o >= getMaxValueCount())
+                .filter(o -> o >= getMaxScoreValue())
                 .count();
     }
 
     public List<PlayerRole> getMaxedPlayers() {
         return points.entrySet()
                 .stream()
-                .filter(o -> o.getValue() >= getMaxValueCount())
+                .filter(o -> o.getValue() >= getMaxScoreValue())
                 .map(o -> o.getKey())
                 .collect(Collectors.toList());
     }

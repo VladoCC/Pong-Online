@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class ServerEngine implements IEngine<Void> {
 
     private boolean connected = false;
 
-    private List<AbstractRequestCommand> commandQueue = new ArrayList<>();
+    private List<AbstractRequestCommand> commandQueue = Collections.synchronizedList(new ArrayList<>());
 
     ServerEngine() {
         serializer = new Serializer();
@@ -53,6 +54,7 @@ public class ServerEngine implements IEngine<Void> {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
 
         connected = true;
+        addCommandToQueue(new CreateCommand());
         addCommandToQueue(new PrepareCommand());
     }
 
@@ -83,7 +85,6 @@ public class ServerEngine implements IEngine<Void> {
 
     @Override
     public void receiveCommand(AbstractResponseCommand command, Void mark) throws IOException, NoEngineException {
-        // todo temp code
         if (command != null) {
             command.execute();
         }
@@ -102,7 +103,9 @@ public class ServerEngine implements IEngine<Void> {
 
     private void sendQueuedCommmands() throws IOException {
         StringBuilder msg = new StringBuilder();
-        for (AbstractRequestCommand command: commandQueue) {
+        AbstractRequestCommand[] commands = new AbstractRequestCommand[commandQueue.size()];
+        commands = commandQueue.toArray(commands);
+        for (AbstractRequestCommand command: commands) {
             msg.append(serializer.serialize(command));
         }
         channel.write(ByteBuffer.wrap(msg.toString().getBytes()));

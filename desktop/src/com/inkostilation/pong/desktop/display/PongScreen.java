@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.inkostilation.pong.commands.ExitGameCommand;
 import com.inkostilation.pong.commands.RequestInputActionCommand;
+import com.inkostilation.pong.commands.RequestReadinessCommand;
 import com.inkostilation.pong.desktop.controls.InputSystem;
 import com.inkostilation.pong.desktop.display.shapes.*;
 import com.inkostilation.pong.desktop.network.Network;
@@ -42,6 +43,11 @@ public class PongScreen implements Screen {
         shapeRenderer.setColor(Color.BLACK);
         rootShape.drawShapeTree(new IShape.Position(0, 0), shapeRenderer);
         shapeRenderer.end();
+        try {
+            Network.getEngine().sendCommand(new RequestReadinessCommand());
+        } catch (IOException | NoEngineException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateControls() {

@@ -1,5 +1,7 @@
 package com.inkostilation.pong.engine;
 
+import com.inkostilation.pong.engine.geometry.Rectangle;
+
 public class Field extends Rectangle {
 
     private Paddle paddle1, paddle2;
@@ -33,16 +35,42 @@ public class Field extends Rectangle {
         paddle1.move();
         paddle2.move();
         ball.move();
-        if (!paddle1.isInBounds(this))
+
+        if (!paddle1.isInBounds(this)) {
             paddle1.constrain(this);
-        if (!paddle2.isInBounds(this))
+        }
+
+        if (!paddle2.isInBounds(this)) {
             paddle2.constrain(this);
-        if (!ball.isInBounds(this))
-            ball.constrain();
-        if (ball.isColliding(paddle1))
+        }
+
+        if (!ball.isInBounds(this)) {
+            onBallOutOfBounds();
+        }
+
+        if (ball.isColliding(paddle1)) {
             ball.applyCollision(paddle1);
-        if (ball.isColliding(paddle2))
+        }
+
+        if (ball.isColliding(paddle2)) {
             ball.applyCollision(paddle2);
+        }
     }
 
+    private void onBallOutOfBounds() {
+        if (ball.getY() - ball.getRadius() < getY()
+                || ball.getY() + ball.getRadius() > getY() + getHeight()) {
+            ball.constrain();
+        }
+    }
+
+    public void reset() {
+        paddle1.reset();
+        paddle2.reset();
+
+        ball.resetPosition();
+        ball.resetVelocity(ball.getX() - ball.getRadius() < getX()?
+                Ball.Direction.LEFT : Ball.Direction.RIGHT);
+
+    }
 }

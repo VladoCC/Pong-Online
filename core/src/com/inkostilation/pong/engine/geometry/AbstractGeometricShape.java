@@ -1,4 +1,4 @@
-package com.inkostilation.pong.engine;
+package com.inkostilation.pong.engine.geometry;
 
 public abstract class AbstractGeometricShape {
 

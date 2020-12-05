@@ -1,4 +1,4 @@
-package com.inkostilation.pong.engine;
+package com.inkostilation.pong.engine.geometry;
 
 public class Circle extends AbstractGeometricShape {
 
@@ -26,9 +26,15 @@ public class Circle extends AbstractGeometricShape {
 
     @Override
     public boolean isInBounds(Rectangle rectangle) {
-        if ((getX() < radius) || (getX() > rectangle.getWidth() - radius))
-            return false;
-        return true;
+        float x = rectangle.getX();
+        float y = rectangle.getY();
+        float width = rectangle.getWidth();
+        float height = rectangle.getHeight();
+
+        return getX() >= (x + radius)
+                && getX() <= (x + width - radius)
+                && getY() >= (y + radius)
+                && getY() <= (y + height - radius);
     }
 
 

@@ -1,10 +1,12 @@
 package com.inkostilation.pong.engine;
 
+import com.inkostilation.pong.engine.geometry.Rectangle;
+
 public class Paddle extends Rectangle {
 
     private static final float FRICTION = 0.94f;
 
-    private float yVel;
+    private float yVel, defaultX, defaultY;
 
     private PlayerRole playerRole;
 
@@ -14,6 +16,19 @@ public class Paddle extends Rectangle {
 
     public Paddle(float x, float y) {
         super(x, y, 20, 80);
+        defaultX = x;
+        defaultY = y;
+        setDefaultState();
+    }
+
+    public void reset() {
+        setX(defaultX);
+        setY(defaultY);
+        yVel = 0;
+        setDefaultState();
+    }
+
+    private void setDefaultState() {
         this.yVel = 0;
         accelerationDirection = Direction.IDLE;
         this.controlled = false;

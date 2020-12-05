@@ -3,13 +3,14 @@ package com.inkostilation.pong.commands;
 
 import com.inkostilation.pong.engine.Field;
 
-public class ResponseFieldCommand extends AbstractResponseCommand{
+public class ResponseFieldCommand extends AbstractResponseCommand {
 
     private Field field;
 
     public ResponseFieldCommand(Field field) {
         this.field = field;
     }
+
     @Override
     public void execute()
     {
