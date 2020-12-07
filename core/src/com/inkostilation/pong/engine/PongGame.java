@@ -23,23 +23,20 @@ public class PongGame {
         activeGamesList.add(this);
     }
 
-    public static PongGame GetWaitingGame() {
+    public static PongGame getWaitingGame() {
         if (activeGamesList.size() == 0) {
             PongGame newGame = new PongGame();
-            newGame.addPlayer();
-            activeGamesList.push(newGame);
+            activeGamesList.addLast(newGame);
             return newGame;
         }
         else {
             if (activeGamesList.peekLast().getPlayersNumber() == 1) {
-                activeGamesList.peekLast().addPlayer();
                 PongGame tempGame = activeGamesList.pop();
-                activeGamesList.push(tempGame);
+                activeGamesList.addFirst(tempGame);
                 return tempGame;
             } else {
                 PongGame newGame = new PongGame();
-                newGame.addPlayer();
-                activeGamesList.push(newGame);
+                activeGamesList.addLast(newGame);
                 return newGame;
             }
         }
