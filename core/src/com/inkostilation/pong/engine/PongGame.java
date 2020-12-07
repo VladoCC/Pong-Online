@@ -2,22 +2,47 @@ package com.inkostilation.pong.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PongGame {
 
     private Field field;
     private Score score;
+    private int playersNumber;
     private PlayerRole winner;
     private boolean active = true;
 
-    private static List<PongGame> activeGamesList = Collections.synchronizedList(new ArrayList<>());
+    private static LinkedList<PongGame> activeGamesList = new LinkedList<>();
 
     public PongGame()
     {
         this.field = new Field();
         this.score = new Score();
+        this.playersNumber = 0;
         activeGamesList.add(this);
+    }
+
+    public static PongGame GetWaitingGame() {
+        if (activeGamesList.size() == 0) {
+            PongGame newGame = new PongGame();
+            newGame.addPlayer();
+            activeGamesList.push(newGame);
+            return newGame;
+        }
+        else {
+            if (activeGamesList.peekLast().getPlayersNumber() == 1) {
+                activeGamesList.peekLast().addPlayer();
+                PongGame tempGame = activeGamesList.pop();
+                activeGamesList.push(tempGame);
+                return tempGame;
+            } else {
+                PongGame newGame = new PongGame();
+                newGame.addPlayer();
+                activeGamesList.push(newGame);
+                return newGame;
+            }
+        }
     }
 
     public Field getField() {
@@ -28,13 +53,21 @@ public class PongGame {
         return score;
     }
 
+    public int getPlayersNumber() {
+        return playersNumber;
+    }
+
+    public void addPlayer() { ++this.playersNumber; }
+
+    public void removePlayer() { --this.playersNumber; }
+
     public void start() {
         //active = true;
     }
     
     public void end() {
         activeGamesList.remove(this);
-        active = true;
+        active = false;
     }
 
     public void scorePoint(PlayerRole role) {

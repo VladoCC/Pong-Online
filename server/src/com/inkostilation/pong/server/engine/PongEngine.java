@@ -141,16 +141,17 @@ public class PongEngine implements IPongEngine<SocketChannel> {
                     break;
                 }
             }
+            playersMap.get(channel).getGame().removePlayer();
             playersMap.remove(channel);
         }
         receiveCommand(new ResponseMessageCommand("Exit success!"), channel);
     }
 
     @Override
-    public void create(SocketChannel channel) throws IOException {
+    public void connectToGame(SocketChannel channel) throws IOException {
         if (!playersMap.containsKey(channel)) {
-            PongGame newGame = new PongGame();
-            playersMap.put(channel, new PlayerData(newGame, null));
+            PongGame game = PongGame.GetWaitingGame();
+            playersMap.put(channel, new PlayerData(game, null));
         }
         else
             receiveCommand(new ResponseMessageCommand("You are playing a game!"), channel);

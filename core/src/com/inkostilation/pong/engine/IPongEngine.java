@@ -13,6 +13,6 @@ public interface IPongEngine<M> extends IEngine<M> {
 
     void prepare(M marker) throws IOException;
     void applyInput(Direction direction, M marker);
-    void create(M marker) throws IOException;
+    void connectToGame(M marker) throws IOException;
     void confirm(M Marker);
 }

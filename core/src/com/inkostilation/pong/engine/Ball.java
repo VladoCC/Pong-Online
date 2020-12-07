@@ -11,7 +11,7 @@ public class Ball extends Circle {
 
     private static final float MAXBOUNCEANGLE = (float) (5*PI/12);
 
-    private float velocity = 3f;
+    private float velocity = 0.2f;
     private float xVel, yVel, defaultX, defaultY;
 
 

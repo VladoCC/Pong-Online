@@ -54,7 +54,7 @@ public class ServerEngine implements IEngine<Void> {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
 
         connected = true;
-        addCommandToQueue(new CreateCommand());
+        addCommandToQueue(new ConnectToGameCommand());
         addCommandToQueue(new PrepareCommand());
     }
 
