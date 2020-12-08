@@ -150,7 +150,8 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void connectToGame(SocketChannel channel) throws IOException {
         if (!playersMap.containsKey(channel)) {
-            PongGame game = PongGame.GetWaitingGame();
+            PongGame game = PongGame.getWaitingGame();
+            game.addPlayer();
             playersMap.put(channel, new PlayerData(game, null));
         }
         else
