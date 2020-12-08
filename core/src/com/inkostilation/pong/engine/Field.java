@@ -63,9 +63,9 @@ public class Field extends Rectangle implements IUpdatable {
     }
 
     private void onBallOutOfBounds() {
-        if (ball.getY() - ball.getRadius() < getY()
-                || ball.getY() + ball.getRadius() > getY() + getHeight()) {
-            ball.constrain();
+        if (ball.getY() - ball.getRadius() <= getY()
+                || ball.getY() + ball.getRadius() >= getY() + getHeight()) {
+            ball.constrain(this);
         }
     }
 

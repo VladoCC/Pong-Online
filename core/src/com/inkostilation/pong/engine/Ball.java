@@ -67,9 +67,21 @@ public class Ball extends Circle implements IUpdatable {
         setY(getY() + yVel * delta);
     }
 
-    public void constrain()
+    public void constrain(Rectangle limit)
     {
         yVel = -yVel;
+
+        if (getY() - getRadius() < limit.getY()) {
+            setY(limit.getY() + getRadius());
+        } else if (getY() + getRadius() > limit.getY() + limit.getHeight()) {
+            setY(limit.getY() + limit.getHeight() - getRadius());
+        }
+
+        if (getX() - getRadius() < limit.getX()) {
+            setX(limit.getX() + getRadius());
+        } else if (getX() + getRadius() > limit.getX() + limit.getWidth()) {
+            setX(limit.getX() + limit.getHeight() - getRadius());
+        }
     }
 
     public void setVelocity(float velocity) {

@@ -19,9 +19,10 @@ public class Circle extends AbstractGeometricShape {
     }
 
     public boolean isColliding(Rectangle rectangle) {
-        if (getY() >= rectangle.getY() && getY() <= rectangle.getY() + rectangle.getHeight() && (getX() <= rectangle.getX() + rectangle.getWidth() + radius || getX()>= rectangle.getX() - radius))
-                return true;
-        return false;
+        return getY() + radius >= rectangle.getY()
+                && getY() - radius <= rectangle.getY() + rectangle.getHeight()
+                && getX() + radius >= rectangle.getX()
+                && getX() - radius <= rectangle.getX() + rectangle.getWidth();
     }
 
     @Override
