@@ -15,7 +15,7 @@ public class NullEngine<M> implements IEngine<M> {
     }
 
     @Override
-    public void act() {
+    public void act(float delta) {
 
     }
 

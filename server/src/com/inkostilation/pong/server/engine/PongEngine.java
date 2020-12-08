@@ -27,11 +27,11 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     @Override
-    public void act() {
+    public void act(float delta) {
         List<PongGame> list = PongGame.getActiveGamesList();
         PongGame[] games = new PongGame[list.size()];
         games = list.toArray(games);
-        Arrays.stream(games).forEach(PongGame::update);
+        Arrays.stream(games).forEach(g -> g.update(delta));
     }
 
     @Override

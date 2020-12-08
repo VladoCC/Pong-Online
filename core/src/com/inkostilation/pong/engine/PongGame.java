@@ -1,11 +1,9 @@
 package com.inkostilation.pong.engine;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PongGame {
+public class PongGame implements IUpdatable {
 
     private Field field;
     private Score score;
@@ -63,6 +61,7 @@ public class PongGame {
 
     public void start() {
         //active = true;
+        field.setStarted(true);
     }
     
     public void end() {
@@ -74,10 +73,11 @@ public class PongGame {
         score.addPlayerScore(role, 1);
     }
 
-    public void update() {
+    @Override
+    public void update(float delta) {
         if (active) {
             if (score.getMaxValueCount() == 0) {
-                field.run();
+                field.update(delta);
                 if (!field.isBallInBounds()) {
                     scorePoint(field.getBall().getX() < 0 ? PlayerRole.FIRST : PlayerRole.SECOND);
 

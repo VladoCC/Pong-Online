@@ -2,10 +2,11 @@ package com.inkostilation.pong.engine;
 
 import com.inkostilation.pong.engine.geometry.Rectangle;
 
-public class Field extends Rectangle {
+public class Field extends Rectangle implements IUpdatable {
 
     private Paddle paddle1, paddle2;
     private Ball ball;
+    private boolean started;
 
     public Field()
     {
@@ -31,10 +32,14 @@ public class Field extends Rectangle {
         return ball.isInBounds(this);
     }
 
-    public void run() {
-        paddle1.move();
-        paddle2.move();
-        ball.move();
+    @Override
+    public void update(float delta) {
+        paddle1.update(delta);
+        paddle2.update(delta);
+
+        if (started) {
+            ball.update(delta);
+        }
 
         if (!paddle1.isInBounds(this)) {
             paddle1.constrain(this);
@@ -71,6 +76,13 @@ public class Field extends Rectangle {
         ball.resetPosition();
         ball.resetVelocity(ball.getX() - ball.getRadius() < getX()?
                 Ball.Direction.LEFT : Ball.Direction.RIGHT);
+    }
 
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 }

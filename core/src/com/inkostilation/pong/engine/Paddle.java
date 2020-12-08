@@ -2,9 +2,11 @@ package com.inkostilation.pong.engine;
 
 import com.inkostilation.pong.engine.geometry.Rectangle;
 
-public class Paddle extends Rectangle {
+public class Paddle extends Rectangle implements IUpdatable {
 
-    private static final float FRICTION = 0.94f;
+    private static final float FRICTION = 0.06f;
+    private static final float ACCELERATION = 20f;
+    private static final float MAX_VELOCITY = 10f;
 
     private float yVel, defaultX, defaultY;
 
@@ -52,19 +54,20 @@ public class Paddle extends Rectangle {
         return controlled;
     }
 
-    public void move() {
+    @Override
+    public void update(float delta) {
         int dir = accelerationDirection.value;
         if (dir != 0)
-            yVel += 2 * dir;
+            yVel += ACCELERATION * dir * delta;
         else
-            yVel *= FRICTION;
+            yVel *= (1 - FRICTION * delta);
 
-        if (yVel >= 5)
-            yVel = 5;
-        else if (yVel <= -5)
-            yVel = -5;
+        if (yVel >= MAX_VELOCITY)
+            yVel = MAX_VELOCITY;
+        else if (yVel <= -MAX_VELOCITY)
+            yVel = -MAX_VELOCITY;
 
-        setY(getY()+yVel);
+        setY(getY() + yVel * delta);
     }
 
     public void constrain(Rectangle rectangle)

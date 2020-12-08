@@ -25,7 +25,7 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         while (active) {
-            Network.getEngine().act();
+            Network.getEngine().act(0);
         }
 
         // last messages to disconnect and etc.

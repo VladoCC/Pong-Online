@@ -38,7 +38,7 @@ public class ServerEngine implements IEngine<Void> {
     }
 
     @Override
-    public void act() {
+    public void act(float delta) {
         try {
             if (!connected) {
                 connect(host, port);

@@ -7,11 +7,11 @@ import java.util.Random;
 
 import static java.lang.Math.PI;
 
-public class Ball extends Circle {
+public class Ball extends Circle implements IUpdatable {
 
     private static final float MAXBOUNCEANGLE = (float) (5*PI/12);
 
-    private float velocity = 0.2f;
+    private float velocity = 20f;
     private float xVel, yVel, defaultX, defaultY;
 
 
@@ -61,9 +61,10 @@ public class Ball extends Circle {
         yVel = (float) (-velocity * Math.sin(bounceAngle));
     }
 
-    public void move() {
-        setX(getX() + xVel);
-        setY(getY() + yVel);
+    @Override
+    public void update(float delta) {
+        setX(getX() + xVel * delta);
+        setY(getY() + yVel * delta);
     }
 
     public void constrain()
