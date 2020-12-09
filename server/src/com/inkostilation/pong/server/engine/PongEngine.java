@@ -52,9 +52,13 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         removePlayer(channel);
     }
 
+    public Field getGameField(SocketChannel channel) {
+        return playersMap.get(channel).getGame().getField();
+    }
+
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
-        Field field = playersMap.get(channel).getGame().getField();
+        Field field = getGameField(channel);
         receiveCommand(new ResponseFieldCommand(field), channel);
     }
 
@@ -63,7 +67,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         if (playersMap.containsKey(channel)) {
             int playersNumber = playersMap.size() - 1;
             PlayerRole player;
-            Field field = playersMap.get(channel).getGame().getField();
+            Field field = getGameField(channel);
             switch (playersNumber) {
                 case 0: {
                     player = PlayerRole.FIRST;
@@ -98,7 +102,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         PlayerRole role = playersMap.get(channel).getPlayerRole();
         Paddle paddle = null;
         boolean allowed = true;
-        Field field = playersMap.get(channel).getGame().getField();
+        Field field = getGameField(channel);
         switch (role) {
             case FIRST:
                 paddle = field.getPaddle1();
@@ -130,7 +134,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     private void removePlayer(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
-            Field field = playersMap.get(channel).getGame().getField();
+            Field field = getGameField(channel);
             switch ((playersMap.get(channel)).getPlayerRole()) {
                 case FIRST: {
                     field.getPaddle1().setControlled(false);
@@ -161,7 +165,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void confirm(SocketChannel channel) {
         if (playersMap.containsKey(channel)) {
-            Field field = playersMap.get(channel).getGame().getField();
+            Field field = getGameField(channel);
 
             switch ((playersMap.get(channel)).getPlayerRole()) {
                 case FIRST: {
