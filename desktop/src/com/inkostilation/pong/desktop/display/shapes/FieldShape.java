@@ -20,15 +20,19 @@ public class FieldShape extends AbstractShape implements IObserver<Field> {
     }
 
     @Override
-    public Position draw(Position position, ShapeRenderer renderer) {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-        offsetX = (w - observable.getWidth() - position.getX()) / 2;
-        offsetY = (h - observable.getHeight() - position.getY()) / 2;
-        float x = position.getX() + offsetX;
-        float y = position.getY() + offsetY;
+    public DrawRect draw(DrawRect rect, ShapeRenderer renderer) {
+        float xEnd = rect.getTopRight().getX();
+        float yEnd = rect.getTopRight().getY();
+
         float width = observable.getWidth();
         float height = observable.getHeight();
+
+        offsetX = (xEnd - width - rect.getBottomLeft().getX()) / 2;
+        offsetY = (yEnd - height - rect.getBottomLeft().getY()) / 2;
+
+        float x = rect.getBottomLeft().getX() + offsetX;
+        float y = rect.getBottomLeft().getY() + offsetY;
+
         renderer.setColor(Color.WHITE);
         renderer.rectLine(x, y + 2, x + width, y + 2, 4);
         renderer.rectLine(x, y + height - 2, x + width, y + height - 2, 4);
@@ -39,7 +43,7 @@ public class FieldShape extends AbstractShape implements IObserver<Field> {
         renderer.circle(x + width / 2, y + height / 2, height / 4 - 2);
         renderer.setColor(Color.WHITE);
         renderer.circle(x + width / 2, y + height / 2,  4);
-        return new Position(w, h);
+        return new DrawRect(new Position(rect.getBottomLeft().getX(), yEnd), rect.getTopRight().getNewPosition(0, 0));
     }
 
     @Override
@@ -49,7 +53,7 @@ public class FieldShape extends AbstractShape implements IObserver<Field> {
     }
 
     @Override
-    public Position getChildrenOffset() {
-        return new Position(offsetX, offsetY);
+    public DrawRect getChildrenRect() {
+        return new DrawRect(new Position(offsetX, offsetY), new Position(offsetX + observable.getWidth(), offsetY + observable.getHeight()));
     }
 }

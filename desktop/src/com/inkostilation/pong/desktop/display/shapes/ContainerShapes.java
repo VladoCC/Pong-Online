@@ -13,7 +13,7 @@ public class ContainerShapes extends AbstractShape {
     }
 
     @Override
-    public Position draw(Position position, ShapeRenderer renderer) {
-        return position.getNewPosition(width, height);
+    public DrawRect draw(DrawRect rect, ShapeRenderer renderer) {
+        return rect.getNewRect(width, height);
     }
 }

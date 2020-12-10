@@ -60,6 +60,7 @@ public class ServerEngine implements IEngine<Void> {
 
     private void communicate() throws IOException, NoEngineException {
         addCommandToQueue(new UpdateFieldCommand());
+        addCommandToQueue(new RequestScoreCommand());
         sendQueuedCommmands();
         commandQueue.clear();
 

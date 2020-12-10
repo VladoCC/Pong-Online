@@ -1,5 +1,7 @@
 package com.inkostilation.pong.desktop.display.shapes;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +22,8 @@ public abstract class AbstractShape implements IShape {
     }
 
     @Override
-    public Position getChildrenOffset() {
-        return new Position(0, 0);
+    public DrawRect getChildrenRect() {
+        return new DrawRect(new Position(0, 0), new Position(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
     }
 
     @Override

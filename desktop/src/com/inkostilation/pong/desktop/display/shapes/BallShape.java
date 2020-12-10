@@ -15,14 +15,14 @@ public class BallShape extends AbstractShape implements IObserver<Ball> {
     }
 
     @Override
-    public Position draw(Position position, ShapeRenderer renderer) {
+    public DrawRect draw(DrawRect rect, ShapeRenderer renderer) {
         float radius = observable.getRadius();
-        float x = observable.getX() + position.getX();
-        float y = observable.getY() + position.getY();
+        float x = observable.getX() + rect.getBottomLeft().getX();
+        float y = observable.getY() + rect.getBottomLeft().getY();
         renderer.setColor(Color.WHITE);
         renderer.set(ShapeRenderer.ShapeType.Filled);
         renderer.circle(x, y, radius);
-        return position;
+        return rect;
     }
 
     @Override

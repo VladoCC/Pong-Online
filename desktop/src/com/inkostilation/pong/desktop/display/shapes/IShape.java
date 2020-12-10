@@ -1,31 +1,36 @@
 package com.inkostilation.pong.desktop.display.shapes;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.List;
 
 public interface IShape {
 
-    Position draw(Position position, ShapeRenderer renderer);
+    DrawRect draw(DrawRect rect, ShapeRenderer renderer);
 
     void addChild(IShape shape);
 
     List<IShape> getChildren();
 
-    Position getChildrenOffset();
+    DrawRect getChildrenRect();
 
     boolean isReady();
 
-    default Position drawShapeTree(Position pos, ShapeRenderer renderer) {
+    default void drawShapeTree(ShapeRenderer renderer) {
+        drawShapeTree(new DrawRect(new Position(0,0), new Position(Gdx.graphics.getWidth(), Gdx.graphics.getHeight())), renderer);
+    }
+
+    default DrawRect drawShapeTree(DrawRect rect, ShapeRenderer renderer) {
         if (isReady()) {
-            Position tmp = draw(pos, renderer);
-            Position childrenPos = getChildrenOffset().getNewPosition(pos.getX(), pos.getY());
+            DrawRect tmp = draw(rect, renderer);
+            DrawRect childrenPos = getChildrenRect().getNewRect(rect.getBottomLeft().getX(), rect.getBottomLeft().getY());
             for (IShape shape : getChildren()) {
                 childrenPos = shape.drawShapeTree(childrenPos, renderer);
             }
             return tmp;
         }
-        return pos;
+        return rect;
     }
 
     class Position {
@@ -47,6 +52,29 @@ public interface IShape {
 
         public Position getNewPosition(float moveX, float moveY) {
             return new Position(x + moveX, y + moveY);
+        }
+    }
+
+    class DrawRect {
+        private Position bottomLeft;
+        private Position topRight;
+
+        public DrawRect(Position bottomLeft, Position topRight) {
+            this.bottomLeft = bottomLeft;
+            this.topRight = topRight;
+        }
+
+        public Position getBottomLeft() {
+            return bottomLeft;
+        }
+
+        public Position getTopRight() {
+            return topRight;
+        }
+
+        public DrawRect getNewRect(float moveX, float moveY) {
+            return new DrawRect(bottomLeft.getNewPosition(moveX, moveY),
+                    topRight.getNewPosition(moveX, moveY));
         }
     }
 }

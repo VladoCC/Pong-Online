@@ -14,18 +14,18 @@ public class PaddleShape extends AbstractShape implements IObserver<Paddle> {
 
     public PaddleShape(PlayerRole role) {
         ClientNotifier.getInstance().subscribe(this, Paddle.class);
-         this.role = role;
+        this.role = role;
     }
 
     @Override
-    public Position draw(Position position, ShapeRenderer renderer) {
+    public DrawRect draw(DrawRect rect, ShapeRenderer renderer) {
         if (observable.isControlled()) {
             renderer.setColor(Color.WHITE);
             renderer.set(ShapeRenderer.ShapeType.Filled);
-            renderer.rect(position.getX() + observable.getX(), position.getY() + observable.getY(),
+            renderer.rect(rect.getBottomLeft().getX() + observable.getX(), rect.getBottomLeft().getY() + observable.getY(),
                     observable.getWidth(), observable.getHeight());
         }
-        return position;
+        return rect;
     }
 
     @Override

@@ -24,6 +24,7 @@ public class PongScreen implements Screen {
     @Override
     public void show() {
         rootShape = new ContainerShapes(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        rootShape.addChild(new ScoreShape());
         FieldShape field = new FieldShape();
         rootShape.addChild(field);
         field.addChild(new BallShape());
@@ -41,7 +42,7 @@ public class PongScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLACK);
-        rootShape.drawShapeTree(new IShape.Position(0, 0), shapeRenderer);
+        rootShape.drawShapeTree(shapeRenderer);
         shapeRenderer.end();
         try {
             Network.getEngine().sendCommand(new RequestReadinessCommand());
