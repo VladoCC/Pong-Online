@@ -52,13 +52,9 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         removePlayer(channel);
     }
 
-    public Field getGameField(SocketChannel channel) {
-        return playersMap.get(channel).getGame().getField();
-    }
-
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
-        Field field = getGameField(channel);
+        Field field = playersMap.get(channel).getGame().getField();
         receiveCommand(new ResponseFieldCommand(field), channel);
     }
 
@@ -67,23 +63,22 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         if (playersMap.containsKey(channel)) {
             int playersNumber = playersMap.size() - 1;
             PlayerRole player;
-            Field field = getGameField(channel);
             switch (playersNumber) {
                 case 0: {
                     player = PlayerRole.FIRST;
                     playersMap.get(channel).setPlayerRole(player);
-                    field.getPaddle1().setPlayerRole(player);
+                    playersMap.get(channel).getGame().setPlayerRole(player);
                     break;
                 }
                 case 1: {
                     if (!(playersMap.containsValue(PlayerRole.SECOND))) {
                         player = PlayerRole.SECOND;
                         playersMap.get(channel).setPlayerRole(player);
-                        field.getPaddle2().setPlayerRole(player);
+                        playersMap.get(channel).getGame().setPlayerRole(player);
                     } else {
                         player = PlayerRole.FIRST;
                         playersMap.get(channel).setPlayerRole(player);
-                        field.getPaddle1().setPlayerRole(player);
+                        playersMap.get(channel).getGame().setPlayerRole(player);
                     }
                     break;
                 }
@@ -102,13 +97,12 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         PlayerRole role = playersMap.get(channel).getPlayerRole();
         Paddle paddle = null;
         boolean allowed = true;
-        Field field = getGameField(channel);
         switch (role) {
             case FIRST:
-                paddle = field.getPaddle1();
+                paddle = playersMap.get(channel).getGame().getPaddle(PlayerRole.FIRST);
                 break;
             case SECOND:
-                paddle = field.getPaddle2();
+                paddle = playersMap.get(channel).getGame().getPaddle(PlayerRole.SECOND);
                 break;
             default:
                 allowed = false;
@@ -134,22 +128,22 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     private void removePlayer(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
-            Field field = getGameField(channel);
-            switch ((playersMap.get(channel)).getPlayerRole()) {
+            PlayerRole role = playersMap.get(channel).getPlayerRole();
+            switch (role) {
                 case FIRST: {
-                    field.getPaddle1().setControlled(false);
+                    playersMap.get(channel).getGame().setControlled(PlayerRole.FIRST, false);
                     break;
                 }
-                case SECOND: {
-                    field.getPaddle2().setControlled(false);
+                case SECOND:
+                    playersMap.get(channel).getGame().setControlled(PlayerRole.SECOND, false);
                     break;
-                }
             }
             playersMap.get(channel).getGame().removePlayer();
             playersMap.remove(channel);
+            receiveCommand(new ResponseMessageCommand("Exit success!"), channel);
         }
-        receiveCommand(new ResponseMessageCommand("Exit success!"), channel);
     }
+
 
     @Override
     public void connectToGame(SocketChannel channel) throws IOException {
@@ -165,27 +159,24 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void confirm(SocketChannel channel) {
         if (playersMap.containsKey(channel)) {
-            Field field = getGameField(channel);
-
-            switch ((playersMap.get(channel)).getPlayerRole()) {
+            PlayerRole role = playersMap.get(channel).getPlayerRole();
+            switch (role) {
                 case FIRST: {
-                    field.getPaddle1().setControlled(true);
+                    playersMap.get(channel).getGame().setControlled(PlayerRole.FIRST, true);
                     break;
                 }
-                case SECOND: {
-                    field.getPaddle2().setControlled(true);
+                case SECOND:
+                    playersMap.get(channel).getGame().setControlled(PlayerRole.SECOND, true);
                     break;
-                }
-            }
-
-            // TODO make adequate check for readiness of both players
-            if (field.getPaddle1().isControlled() && field.getPaddle2().isControlled()) {
-                start(playersMap.get(channel).getGame());
             }
         }
+            if (playersMap.get(channel).getGame().isControlled(PlayerRole.FIRST) && playersMap.get(channel).getGame().isControlled(PlayerRole.SECOND)) {
+                start(playersMap.get(channel).getGame());
+            }
     }
 
     private void start(PongGame game) {
         game.start();
     }
+
 }

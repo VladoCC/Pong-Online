@@ -8,9 +8,8 @@ public class Field extends Rectangle implements IUpdatable {
     private Ball ball;
     private boolean started;
 
-    public Field()
-    {
-        super(0,0,700,500);
+    public Field() {
+        super(0, 0, 700, 500);
         this.paddle1 = new Paddle(20, 210);
         this.paddle2 = new Paddle(660, 210);
         this.ball = new Ball(350, 250);
@@ -74,7 +73,7 @@ public class Field extends Rectangle implements IUpdatable {
         paddle2.reset();
 
         ball.resetPosition();
-        ball.resetVelocity(ball.getX() - ball.getRadius() < getX()?
+        ball.resetVelocity(ball.getX() - ball.getRadius() < getX() ?
                 Ball.Direction.LEFT : Ball.Direction.RIGHT);
     }
 
@@ -84,5 +83,42 @@ public class Field extends Rectangle implements IUpdatable {
 
     public void setStarted(boolean started) {
         this.started = started;
+    }
+
+    public void setControlled(PlayerRole playerRole, boolean state) {
+        switch (playerRole) {
+            case FIRST: {
+                getPaddle1().setControlled(state);
+                break;
+            }
+            case SECOND: {
+                getPaddle2().setControlled(state);
+                break;
+            }
+        }
+    }
+
+    public boolean isControlled(PlayerRole playerRole) {
+        switch (playerRole) {
+            case FIRST: {
+                return getPaddle1().isControlled();
+            }
+            case SECOND: {
+                return getPaddle2().isControlled();
+            }
+        }
+        return false;
+    }
+
+    public Paddle getPaddle(PlayerRole playerRole) {
+        switch (playerRole) {
+            case FIRST: {
+                return getPaddle1();
+            }
+            case SECOND: {
+                return getPaddle2();
+            }
+        }
+        return null;
     }
 }

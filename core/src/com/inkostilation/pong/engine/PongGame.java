@@ -61,7 +61,7 @@ public class PongGame implements IUpdatable {
         field.setStarted(true);
     }
     
-    public void end() {
+    public void stop() {
         activeGamesList.remove(this);
         active = false;
     }
@@ -82,7 +82,7 @@ public class PongGame implements IUpdatable {
                 }
             } else {
                 winner = score.getMaxedPlayers().get(0);
-                end();
+                stop();
             }
         }
     }
@@ -93,5 +93,21 @@ public class PongGame implements IUpdatable {
 
     public static List<PongGame> getActiveGamesList() {
         return activeGamesList;
+    }
+
+    public void setControlled(PlayerRole playerRole, boolean state) {
+        getField().setControlled(playerRole, state);
+    }
+
+    public boolean isControlled(PlayerRole playerRole) {
+        return getField().isControlled(playerRole);
+    }
+
+    public Paddle getPaddle(PlayerRole playerRole) {
+        return getField().getPaddle(playerRole);
+    }
+
+    public void setPlayerRole(PlayerRole playerRole) {
+        getField().getPaddle(playerRole).setPlayerRole(playerRole);
     }
 }

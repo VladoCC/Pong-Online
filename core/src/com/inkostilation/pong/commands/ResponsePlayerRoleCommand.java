@@ -1,6 +1,5 @@
 package com.inkostilation.pong.commands;
 
-
 import com.inkostilation.pong.engine.PlayerRole;
 
 public class ResponsePlayerRoleCommand extends AbstractResponseCommand{

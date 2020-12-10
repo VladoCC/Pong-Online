@@ -38,5 +38,4 @@ public class Circle extends AbstractGeometricShape {
                 && getY() <= (y + height - radius);
     }
 
-
 }

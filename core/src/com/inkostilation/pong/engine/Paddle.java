@@ -5,7 +5,7 @@ import com.inkostilation.pong.engine.geometry.Rectangle;
 public class Paddle extends Rectangle implements IUpdatable {
 
     private static final float FRICTION = 0.07f;
-    private static final float ACCELERATION = 60f;
+    private static final float ACCELERATION = 40f;
     private static final float MAX_VELOCITY = 90f;
 
     private float yVel, defaultX, defaultY;
