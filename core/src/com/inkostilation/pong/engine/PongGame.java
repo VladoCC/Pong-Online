@@ -67,6 +67,8 @@ public class PongGame implements IUpdatable {
 
     public void start() {
         //active = true;
+        activeGamesMap.remove(gameState, this);
+        activeGamesMap.put(GameState.PLAYING, this);
         field.setStarted(true);
     }
     
