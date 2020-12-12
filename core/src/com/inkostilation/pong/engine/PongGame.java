@@ -1,40 +1,41 @@
 package com.inkostilation.pong.engine;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
+import java.util.*;
 
 public class PongGame implements IUpdatable {
 
     private Field field;
     private Score score;
+    private GameState gameState;
     private int playersNumber;
     private PlayerRole winner;
     private boolean active = true;
 
-    private static LinkedList<PongGame> activeGamesList = new LinkedList<>();
+    private static ListMultimap<GameState, PongGame> activeGamesMap = ArrayListMultimap.create();
 
     public PongGame()
     {
         this.field = new Field();
         this.score = new Score();
         this.playersNumber = 0;
-        activeGamesList.add(this);
+        this.gameState = GameState.WAITING;
+        activeGamesMap.put(gameState, this);
     }
 
-    public static PongGame getWaitingGame() {
-        if (activeGamesList.size() == 0) {
+    public static PongGame getWaitingGame(int number) {
+        if (activeGamesMap.isEmpty()) {
             PongGame newGame = new PongGame();
-            activeGamesList.addLast(newGame);
             return newGame;
         }
         else {
-            if (activeGamesList.peekLast().getPlayersNumber() == 1) {
-                PongGame tempGame = activeGamesList.pop();
-                activeGamesList.addFirst(tempGame);
+            if (!getGameCollection(GameState.WAITING).isEmpty()) {
+                PongGame tempGame = getGame(GameState.WAITING, 0);
                 return tempGame;
             } else {
                 PongGame newGame = new PongGame();
-                activeGamesList.addLast(newGame);
                 return newGame;
             }
         }
@@ -52,6 +53,14 @@ public class PongGame implements IUpdatable {
         return playersNumber;
     }
 
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
     public void addPlayer() { ++this.playersNumber; }
 
     public void removePlayer() { --this.playersNumber; }
@@ -62,7 +71,7 @@ public class PongGame implements IUpdatable {
     }
     
     public void stop() {
-        activeGamesList.remove(this);
+        activeGamesMap.remove(gameState, this);
         active = false;
     }
 
@@ -87,12 +96,16 @@ public class PongGame implements IUpdatable {
         }
     }
 
-    public static PongGame getGame(int index) {
-        return activeGamesList.get(index);
+    public static List<PongGame> getGameCollection(GameState state) {
+        return activeGamesMap.get(state);
     }
 
-    public static List<PongGame> getActiveGamesList() {
-        return activeGamesList;
+    public static PongGame getGame(GameState state, int index) {
+        return getGameCollection(state).get(index);
+    }
+
+    public static ListMultimap<GameState, PongGame> getActiveGamesMap() {
+        return activeGamesMap;
     }
 
     public void setControlled(PlayerRole playerRole, boolean state) {

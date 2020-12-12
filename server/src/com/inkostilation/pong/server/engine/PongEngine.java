@@ -1,13 +1,13 @@
 package com.inkostilation.pong.server.engine;
 
+import com.google.common.collect.ListMultimap;
 import com.inkostilation.pong.commands.*;
 import com.inkostilation.pong.engine.*;
 import com.inkostilation.pong.exceptions.NoEngineException;
 import com.inkostilation.pong.server.network.NetworkProcessor;
-
+import java.util.*;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
-import java.util.*;
 
 public class PongEngine implements IPongEngine<SocketChannel> {
 
@@ -28,9 +28,9 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     @Override
     public void act(float delta) {
-        List<PongGame> list = PongGame.getActiveGamesList();
-        PongGame[] games = new PongGame[list.size()];
-        games = list.toArray(games);
+        ListMultimap<GameState, PongGame> map = PongGame.getActiveGamesMap();
+        PongGame[] games = new PongGame[map.size()];
+        games = map.values().toArray(new PongGame[0]);
         Arrays.stream(games).forEach(g -> g.update(delta));
     }
 
@@ -139,6 +139,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
                     break;
             }
             playersMap.get(channel).getGame().removePlayer();
+            playersMap.get(channel).getGame().setGameState(GameState.INTERRUPTED);
             playersMap.remove(channel);
             receiveCommand(new ResponseMessageCommand("Exit success!"), channel);
         }
@@ -148,7 +149,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void connectToGame(SocketChannel channel) throws IOException {
         if (!playersMap.containsKey(channel)) {
-            PongGame game = PongGame.getWaitingGame();
+            PongGame game = PongGame.getWaitingGame(0); //Player selects a number somehow?..
             game.addPlayer();
             playersMap.put(channel, new PlayerData(game, null));
         }
@@ -159,6 +160,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void confirm(SocketChannel channel) {
         if (playersMap.containsKey(channel)) {
+            playersMap.get(channel).getGame().setGameState(GameState.CONFIRMATION);
             PlayerRole role = playersMap.get(channel).getPlayerRole();
             switch (role) {
                 case FIRST: {
@@ -176,7 +178,14 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     }
 
     private void start(PongGame game) {
+        game.setGameState(GameState.PLAYING);
         game.start();
+    }
+
+    @Override
+    public void sendGameState(SocketChannel channel) throws IOException {
+        if (playersMap.containsKey(channel))
+            receiveCommand(new ResponseGameStateCommand(playersMap.get(channel).getGame().getGameState()), channel);
     }
 
 }

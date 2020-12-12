@@ -75,5 +75,6 @@ project(":core") {
         api "com.github.czyzby:gdx-lml:1.9.1.9.6"
         api "com.github.czyzby:gdx-lml-vis:1.9.1.9.6"
         implementation 'com.google.code.gson:gson:2.8.6'
+        api group: 'com.google.collections', name: 'google-collections', version: '1.0-rc2'
     }
 }
