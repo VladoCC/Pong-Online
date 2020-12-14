@@ -88,7 +88,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
                     break;
                 }
             }
-            receiveCommand(new ResponseObjectCommand(player), channel);
+            receiveCommand(new ResponsePlayerRoleCommand(player), channel);
         }
     }
 
@@ -145,16 +145,20 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         }
     }
 
-
     @Override
-    public void connectToGame(SocketChannel channel) throws IOException {
+    public void connectToGame(SocketChannel channel, int index) throws IOException {
         if (!playersMap.containsKey(channel)) {
-            PongGame game = PongGame.getWaitingGame(0); //Player selects a number somehow?..
+            PongGame game = PongGame.getWaitingGame(index);
             game.addPlayer();
             playersMap.put(channel, new PlayerData(game, null));
         }
         else
             receiveCommand(new ResponseMessageCommand("You are playing a game!"), channel);
+    }
+
+    @Override
+    public void connectToGame(SocketChannel channel) throws IOException {
+        connectToGame(channel, 0);
     }
 
     @Override

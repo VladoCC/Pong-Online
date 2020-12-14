@@ -25,14 +25,14 @@ public class PongGame implements IUpdatable {
         activeGamesMap.put(gameState, this);
     }
 
-    public static PongGame getWaitingGame(int number) {
+    public static PongGame getWaitingGame(int index) {
         if (activeGamesMap.isEmpty()) {
             PongGame newGame = new PongGame();
             return newGame;
         }
         else {
             if (!getGameCollection(GameState.WAITING).isEmpty()) {
-                PongGame tempGame = getGame(GameState.WAITING, 0);
+                PongGame tempGame = getGame(GameState.WAITING, index);
                 return tempGame;
             } else {
                 PongGame newGame = new PongGame();
@@ -88,8 +88,8 @@ public class PongGame implements IUpdatable {
                 field.update(delta);
                 if (!field.isBallInBounds()) {
                     scorePoint(field.getBall().getX() < 0 ? PlayerRole.FIRST : PlayerRole.SECOND);
-
                     field.reset();
+                    gameState = GameState.AFTER_GOAL_CONFIRMATION;
                 }
             } else {
                 winner = score.getMaxedPlayers().get(0);
