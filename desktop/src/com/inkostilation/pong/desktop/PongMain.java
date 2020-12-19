@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.inkostilation.pong.desktop.controls.InputSystem;
+import com.inkostilation.pong.desktop.display.LobbyScreen;
 import com.inkostilation.pong.desktop.display.PongScreen;
 import com.inkostilation.pong.desktop.network.Network;
 import com.inkostilation.pong.desktop.network.ServerThread;
@@ -20,7 +21,7 @@ public class PongMain extends Game {
 
 	@Override
 	public void create () {
-		setScreen(new PongScreen());
+		setScreen(new LobbyScreen());
 		ServerThread.getInstance().start();
 	}
 
