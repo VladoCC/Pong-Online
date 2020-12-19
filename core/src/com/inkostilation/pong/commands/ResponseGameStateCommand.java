@@ -11,7 +11,5 @@ public class ResponseGameStateCommand extends AbstractResponseCommand {
     }
 
     @Override
-    public void execute() {
-
-    }
+    public void execute() { System.out.println(state.toString()); }
 }
