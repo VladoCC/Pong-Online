@@ -1,6 +1,7 @@
 package com.inkostilation.pong.desktop.network;
 
 import com.inkostilation.pong.commands.*;
+import com.inkostilation.pong.commands.request.RequestScoreCommand;
 import com.inkostilation.pong.desktop.notification.ClientNotifier;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.exceptions.NoEngineException;
@@ -54,19 +55,17 @@ public class ServerEngine implements IEngine<Void> {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
 
         connected = true;
-        addCommandToQueue(new ConnectToGameCommand());
-        addCommandToQueue(new PrepareCommand());
     }
 
     private void communicate() throws IOException, NoEngineException {
-        addCommandToQueue(new UpdateFieldCommand());
-        addCommandToQueue(new RequestScoreCommand());
-        sendQueuedCommmands();
-        commandQueue.clear();
+        if (commandQueue.size() > 0) {
+            sendQueuedCommmands();
+            commandQueue.clear();
 
-        List<AbstractResponseCommand> commands = listen();
-        for (AbstractResponseCommand command : commands) {
-            receiveCommand(command, null);
+            List<AbstractResponseCommand> commands = listen();
+            for (AbstractResponseCommand command : commands) {
+                receiveCommand(command, null);
+            }
         }
     }
 

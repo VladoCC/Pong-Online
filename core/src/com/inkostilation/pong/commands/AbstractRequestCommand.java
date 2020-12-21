@@ -34,5 +34,5 @@ public abstract class AbstractRequestCommand<E extends IEngine<M>, M> implements
         execute(engine);
     }
 
-    abstract void execute(E engine) throws IOException;
+    protected abstract void execute(E engine) throws IOException;
 }

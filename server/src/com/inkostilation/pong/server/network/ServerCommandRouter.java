@@ -2,7 +2,7 @@ package com.inkostilation.pong.server.network;
 
 import com.inkostilation.pong.commands.AbstractPongCommand;
 import com.inkostilation.pong.commands.AbstractRequestCommand;
-import com.inkostilation.pong.commands.ResponseMessageCommand;
+import com.inkostilation.pong.commands.response.ResponseMessageCommand;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.engine.NullEngine;
 import com.inkostilation.pong.exceptions.NoEngineException;

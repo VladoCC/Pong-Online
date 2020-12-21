@@ -1,5 +1,6 @@
-package com.inkostilation.pong.commands;
+package com.inkostilation.pong.commands.request;
 
+import com.inkostilation.pong.commands.AbstractPongCommand;
 import com.inkostilation.pong.engine.IPongEngine;
 
 import java.io.IOException;

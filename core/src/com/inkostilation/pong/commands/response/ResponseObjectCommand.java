@@ -1,4 +1,6 @@
-package com.inkostilation.pong.commands;
+package com.inkostilation.pong.commands.response;
+
+import com.inkostilation.pong.commands.AbstractResponseCommand;
 
 public class ResponseObjectCommand extends AbstractResponseCommand {
 

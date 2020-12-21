@@ -1,5 +1,6 @@
-package com.inkostilation.pong.commands;
+package com.inkostilation.pong.commands.response;
 
+import com.inkostilation.pong.commands.AbstractResponseCommand;
 import com.inkostilation.pong.engine.GameState;
 
 public class ResponseGameStateCommand extends AbstractResponseCommand {
@@ -11,5 +12,7 @@ public class ResponseGameStateCommand extends AbstractResponseCommand {
     }
 
     @Override
-    public void execute() { System.out.println(state.toString()); }
+    public void execute() {
+        getNotifier().notifyObservers(state);
+    }
 }

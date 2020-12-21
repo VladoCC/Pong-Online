@@ -50,9 +50,9 @@ public class ScoreShape extends AbstractShape implements IObserver<Score> {
     }
 
     @Override
-    public void observe(Score observable) {
+    public void observe(Score... observable) {
         if (observable != null) {
-            this.observable = observable;
+            this.observable = observable[0];
             setReady(true);
         }
     }

@@ -6,6 +6,7 @@ import com.inkostilation.pong.engine.Paddle;
 
 public interface INotifier {
 
-    <O> void notifyObservers(O observable);
+    <O> void notifyObservers(O... observable);
     <O> void subscribe(IObserver<O> observer, Class<O> type);
+    <O> void unsubscribe(IObserver<O> observer, Class<O> type);
 }

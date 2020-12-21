@@ -47,8 +47,8 @@ public class FieldShape extends AbstractShape implements IObserver<Field> {
     }
 
     @Override
-    public void observe(Field observable) {
-        this.observable = observable;
+    public void observe(Field... observable) {
+        this.observable = observable[0];
         setReady(true);
     }
 

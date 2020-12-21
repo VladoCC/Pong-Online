@@ -7,6 +7,6 @@ import java.io.IOException;
 public class ConnectToGameCommand<M> extends AbstractPongCommand<M> {
     @Override
     public void execute(IPongEngine engine) throws IOException {
-        getEngine().connectToGame(getMarker());
+        getEngine().startNewGame(getMarker());
     }
 }

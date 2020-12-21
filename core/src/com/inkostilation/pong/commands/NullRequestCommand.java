@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class NullRequestCommand extends AbstractRequestCommand {
     @Override
-    void execute(IEngine engine) throws IOException {
+    protected void execute(IEngine engine) throws IOException {
 
     }
 }

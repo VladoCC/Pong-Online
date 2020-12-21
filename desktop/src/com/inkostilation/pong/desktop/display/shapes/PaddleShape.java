@@ -21,17 +21,21 @@ public class PaddleShape extends AbstractShape implements IObserver<Paddle> {
     public DrawRect draw(DrawRect rect, ShapeRenderer renderer) {
         if (observable.isControlled()) {
             renderer.setColor(Color.WHITE);
-            renderer.set(ShapeRenderer.ShapeType.Filled);
-            renderer.rect(rect.getBottomLeft().getX() + observable.getX(), rect.getBottomLeft().getY() + observable.getY(),
-                    observable.getWidth(), observable.getHeight());
+        } else {
+            renderer.setColor(Color.GRAY);
         }
+        renderer.set(ShapeRenderer.ShapeType.Filled);
+        renderer.rect(rect.getBottomLeft().getX() + observable.getX(), rect.getBottomLeft().getY() + observable.getY(),
+                observable.getWidth(), observable.getHeight());
+
         return rect;
     }
 
     @Override
-    public void observe(Paddle observable) {
-        if (observable.getPlayerRole() != null && observable.getPlayerRole().equals(role)) {
-            this.observable = observable;
+    public void observe(Paddle... observable) {
+        Paddle first = observable[0];
+        if (first.getPlayerRole() != null && first.getPlayerRole().equals(role)) {
+            this.observable = first;
             setReady(true);
         }
     }

@@ -1,8 +1,12 @@
 package com.inkostilation.pong.engine;
 
+import com.inkostilation.pong.commands.AbstractResponseCommand;
+import com.inkostilation.pong.commands.response.ResponseFieldCommand;
 import com.inkostilation.pong.engine.geometry.Rectangle;
 
-public class Field extends Rectangle implements IUpdatable {
+import java.util.List;
+
+public class Field extends Rectangle implements IUpdatable, ICommandSender {
 
     private Paddle paddle1, paddle2;
     private Ball ball;
@@ -10,8 +14,12 @@ public class Field extends Rectangle implements IUpdatable {
 
     public Field() {
         super(0, 0, 700, 500);
+
         this.paddle1 = new Paddle(20, 210);
         this.paddle2 = new Paddle(660, 210);
+        paddle1.setPlayerRole(PlayerRole.FIRST);
+        paddle2.setPlayerRole(PlayerRole.SECOND);
+
         this.ball = new Ball(350, 250);
     }
 
@@ -120,5 +128,15 @@ public class Field extends Rectangle implements IUpdatable {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean hasCommands() {
+        return true;
+    }
+
+    @Override
+    public void getCommands(List<AbstractResponseCommand> pool) {
+        pool.add(new ResponseFieldCommand(this));
     }
 }

@@ -1,5 +1,6 @@
-package com.inkostilation.pong.commands;
+package com.inkostilation.pong.commands.request;
 
+import com.inkostilation.pong.commands.AbstractPongCommand;
 import com.inkostilation.pong.engine.Direction;
 import com.inkostilation.pong.engine.IPongEngine;
 
@@ -14,7 +15,7 @@ public class RequestInputActionCommand<M> extends AbstractPongCommand<M> {
     }
 
     @Override
-    void execute(IPongEngine<M> engine) throws IOException {
+    public void execute(IPongEngine<M> engine) throws IOException {
         getEngine().applyInput(direction, getMarker());
     }
 }

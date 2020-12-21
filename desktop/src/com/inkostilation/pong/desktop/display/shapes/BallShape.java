@@ -26,8 +26,8 @@ public class BallShape extends AbstractShape implements IObserver<Ball> {
     }
 
     @Override
-    public void observe(Ball observable) {
-        this.observable = observable;
+    public void observe(Ball... observable) {
+        this.observable = observable[0];
         setReady(true);
     }
 }

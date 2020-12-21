@@ -96,6 +96,8 @@ public class NetworkProcessor implements IProcessor {
 
     private void receiveMessage(SelectionKey key) throws IOException {
         List<String> objects = parseObjects((SocketChannel) key.channel());
+
+        Set<Class> set = new HashSet<>();
         List<AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>> commands = objects.stream()
                 .map(o -> {
                     AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command = (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel>) serializer.deserialize(o);
@@ -105,6 +107,7 @@ public class NetworkProcessor implements IProcessor {
                     command.setMarker((SocketChannel) key.channel());
                     return command;
                 })
+                .filter(c -> set.add(c.getClass()))
                 .collect(Collectors.toList());
 
         for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
@@ -131,6 +134,10 @@ public class NetworkProcessor implements IProcessor {
             commands.add(command);
             commandQueue.put(channel, commands);
         }
+    }
+
+    public boolean hasQueuedMessages(SocketChannel channel) {
+        return commandQueue.containsKey(channel) && commandQueue.get(channel).size() > 0;
     }
 
     private void sendAll() {

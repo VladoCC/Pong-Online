@@ -25,10 +25,13 @@ public class ClientNotifier implements INotifier {
     }
 
     @Override
-    public <O> void notifyObservers(O observable) {
-        Class<O> observableClass = (Class<O>) observable.getClass();
-        if (observers.containsKey(observableClass)) {
-            observers.get(observableClass).forEach(o ->o.observe(observable));
+    public <O> void notifyObservers(O... observable) {
+        if (observable != null && observable.length > 0) {
+            O first = observable[0];
+            Class<O> observableClass = (Class<O>) first.getClass();
+            if (observers.containsKey(observableClass)) {
+                observers.get(observableClass).forEach(o -> o.observe(observable));
+            }
         }
     }
 
@@ -40,6 +43,13 @@ public class ClientNotifier implements INotifier {
             List<IObserver> list = new ArrayList<>();
             list.add(observer);
             observers.put(type, list);
+        }
+    }
+
+    @Override
+    public <O> void unsubscribe(IObserver<O> observer, Class<O> type) {
+        if (observers.containsKey(type) && observers.get(type).contains(observer)) {
+            observers.get(type).remove(observer);
         }
     }
 }

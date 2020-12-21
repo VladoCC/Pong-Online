@@ -2,6 +2,7 @@ package com.inkostilation.pong.server.engine;
 
 import com.google.common.collect.ListMultimap;
 import com.inkostilation.pong.commands.*;
+import com.inkostilation.pong.commands.response.*;
 import com.inkostilation.pong.engine.*;
 import com.inkostilation.pong.exceptions.NoEngineException;
 import com.inkostilation.pong.server.network.NetworkProcessor;
@@ -31,12 +32,29 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         ListMultimap<GameState, PongGame> map = PongGame.getActiveGamesMap();
         PongGame[] games = new PongGame[map.size()];
         games = map.values().toArray(new PongGame[0]);
-        Arrays.stream(games).forEach(g -> g.update(delta));
+        Arrays.stream(games).forEach(g -> {
+            g.update(delta);
+
+            if (g.hasCommands()) {
+                List<AbstractResponseCommand> commands = new ArrayList<>();
+                g.getCommands(commands);
+                playersMap.entrySet().stream()
+                        .filter(e -> e.getValue().getGame() == g)
+                        .forEach(e -> commands.forEach(c -> {
+                            try {
+                                receiveCommand(c, e.getKey());
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        }));
+            }
+        });
     }
 
     @Override
     public void receiveCommand(AbstractResponseCommand command, SocketChannel channel) throws IOException {
         NetworkProcessor.getInstance().sendMessage(command, channel);
+
     }
 
     @Override
@@ -54,46 +72,14 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
     @Override
     public void sendFieldState(SocketChannel channel) throws IOException {
-        Field field = playersMap.get(channel).getGame().getField();
-        receiveCommand(new ResponseFieldCommand(field), channel);
-    }
-
-    @Override
-    public void prepare(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
-            int playersNumber = playersMap.size() - 1;
-            PlayerRole player;
-            switch (playersNumber) {
-                case 0: {
-                    player = PlayerRole.FIRST;
-                    playersMap.get(channel).setPlayerRole(player);
-                    playersMap.get(channel).getGame().setPlayerRole(player);
-                    break;
-                }
-                case 1: {
-                    if (!(playersMap.containsValue(PlayerRole.SECOND))) {
-                        player = PlayerRole.SECOND;
-                        playersMap.get(channel).setPlayerRole(player);
-                        playersMap.get(channel).getGame().setPlayerRole(player);
-                    } else {
-                        player = PlayerRole.FIRST;
-                        playersMap.get(channel).setPlayerRole(player);
-                        playersMap.get(channel).getGame().setPlayerRole(player);
-                    }
-                    break;
-                }
-                default: {
-                    player = PlayerRole.DENIED;
-                    playersMap.get(channel).setPlayerRole(player);
-                    break;
-                }
-            }
-            receiveCommand(new ResponsePlayerRoleCommand(player), channel);
+            Field field = playersMap.get(channel).getGame().getField();
+            receiveCommand(new ResponseFieldCommand(field), channel);
         }
     }
 
     @Override
-    public void applyInput(Direction direction, SocketChannel channel) {
+    public void applyInput(Direction direction, SocketChannel channel) throws IOException {
         PlayerRole role = playersMap.get(channel).getPlayerRole();
         Paddle paddle = null;
         boolean allowed = true;
@@ -110,6 +96,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
         if (allowed) {
             paddle.setAccelerationDirection(direction);
         }
+        sendFieldState(channel);
     }
 
     @Override
@@ -129,17 +116,9 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     private void removePlayer(SocketChannel channel) throws IOException {
         if (playersMap.containsKey(channel)) {
             PlayerRole role = playersMap.get(channel).getPlayerRole();
-            switch (role) {
-                case FIRST: {
-                    playersMap.get(channel).getGame().setControlled(PlayerRole.FIRST, false);
-                    break;
-                }
-                case SECOND:
-                    playersMap.get(channel).getGame().setControlled(PlayerRole.SECOND, false);
-                    break;
-            }
-            playersMap.get(channel).getGame().removePlayer();
-            playersMap.get(channel).getGame().setGameState(GameState.INTERRUPTED);
+            playersMap.get(channel).getGame().setControlled(role, false);
+
+            playersMap.get(channel).getGame().removePlayer(role);
             playersMap.remove(channel);
             receiveCommand(new ResponseMessageCommand("Exit success!"), channel);
         }
@@ -148,41 +127,42 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void connectToGame(SocketChannel channel, int index) throws IOException {
         if (!playersMap.containsKey(channel)) {
-            PongGame game = PongGame.getWaitingGame(index);
-            game.addPlayer();
-            playersMap.put(channel, new PlayerData(game, null));
+            PongGame game = (PongGame) PongGame.getActiveGamesMap().values().toArray()[index];
+            PlayerRole role = game.addPlayer();
+            playersMap.put(channel, new PlayerData(game, role));
+
+            receiveCommand(new ResponsePlayerRoleCommand(role), channel);
+            sendGameState(channel);
         }
-        else
+        else {
             receiveCommand(new ResponseMessageCommand("You are playing a game!"), channel);
+        }
     }
 
     @Override
-    public void connectToGame(SocketChannel channel) throws IOException {
-        connectToGame(channel, 0);
+    public void startNewGame(SocketChannel channel) throws IOException {
+        PongGame game = new PongGame();
+        PlayerRole role = game.addPlayer();
+        playersMap.put(channel, new PlayerData(game, role));
+
+        receiveCommand(new ResponsePlayerRoleCommand(role), channel);
+        sendGameState(channel);
     }
 
     @Override
     public void confirm(SocketChannel channel) {
         if (playersMap.containsKey(channel)) {
-            playersMap.get(channel).getGame().setGameState(GameState.CONFIRMATION);
+            //playersMap.get(channel).getGame().setGameState(GameState.CONFIRMATION);
             PlayerRole role = playersMap.get(channel).getPlayerRole();
-            switch (role) {
-                case FIRST: {
-                    playersMap.get(channel).getGame().setControlled(PlayerRole.FIRST, true);
-                    break;
-                }
-                case SECOND:
-                    playersMap.get(channel).getGame().setControlled(PlayerRole.SECOND, true);
-                    break;
-            }
+            playersMap.get(channel).getGame().setControlled(role, true);
         }
-            if (playersMap.get(channel).getGame().isControlled(PlayerRole.FIRST) && playersMap.get(channel).getGame().isControlled(PlayerRole.SECOND)) {
-                start(playersMap.get(channel).getGame());
-            }
+
+        if (playersMap.get(channel).getGame().isControlled(PlayerRole.FIRST) && playersMap.get(channel).getGame().isControlled(PlayerRole.SECOND)) {
+            start(playersMap.get(channel).getGame());
+        }
     }
 
     private void start(PongGame game) {
-        game.setGameState(GameState.PLAYING);
         game.start();
     }
 
@@ -192,4 +172,16 @@ public class PongEngine implements IPongEngine<SocketChannel> {
             receiveCommand(new ResponseGameStateCommand(playersMap.get(channel).getGame().getGameState()), channel);
     }
 
+    @Override
+    public void sendGameList(SocketChannel marker) throws IOException {
+        ListMultimap<GameState, PongGame> map = PongGame.getActiveGamesMap();
+        PongGame[] games = new PongGame[map.size()];
+        games = map.values().toArray(games);
+        receiveCommand(new ResponseGameListCommand(games), marker);
+    }
+
+    @Override
+    public void sendGameUpdate(SocketChannel marker) throws IOException {
+        receiveCommand(new ResponseEmptyCommand(), marker);
+    }
 }

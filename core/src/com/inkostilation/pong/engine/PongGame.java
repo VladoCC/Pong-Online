@@ -2,10 +2,12 @@ package com.inkostilation.pong.engine;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.inkostilation.pong.commands.AbstractResponseCommand;
+import com.inkostilation.pong.commands.response.ResponseGameStateCommand;
 
 import java.util.*;
 
-public class PongGame implements IUpdatable {
+public class PongGame implements IUpdatable, ICommandSender {
 
     private Field field;
     private Score score;
@@ -13,6 +15,10 @@ public class PongGame implements IUpdatable {
     private int playersNumber;
     private PlayerRole winner;
     private boolean active = true;
+
+    private boolean changed = true;
+
+    private LinkedList<PlayerRole> roles = new LinkedList<>();
 
     private static ListMultimap<GameState, PongGame> activeGamesMap = ArrayListMultimap.create();
 
@@ -23,21 +29,19 @@ public class PongGame implements IUpdatable {
         this.playersNumber = 0;
         this.gameState = GameState.WAITING;
         activeGamesMap.put(gameState, this);
+
+        roles.add(PlayerRole.FIRST);
+        roles.add(PlayerRole.SECOND);
+        roles.add(PlayerRole.DENIED);
     }
 
     public static PongGame getWaitingGame(int index) {
-        if (activeGamesMap.isEmpty()) {
+        if (!activeGamesMap.isEmpty() && !getGameCollection(GameState.WAITING).isEmpty()) {
+            PongGame tempGame = getGame(GameState.WAITING, index);
+            return tempGame;
+        } else {
             PongGame newGame = new PongGame();
             return newGame;
-        }
-        else {
-            if (!getGameCollection(GameState.WAITING).isEmpty()) {
-                PongGame tempGame = getGame(GameState.WAITING, index);
-                return tempGame;
-            } else {
-                PongGame newGame = new PongGame();
-                return newGame;
-            }
         }
     }
 
@@ -58,18 +62,37 @@ public class PongGame implements IUpdatable {
     }
 
     public void setGameState(GameState gameState) {
+        activeGamesMap.remove(this.gameState, this);
+        activeGamesMap.put(gameState, this);
+
+        changed = true;
         this.gameState = gameState;
     }
 
-    public void addPlayer() { ++this.playersNumber; }
+    public PlayerRole addPlayer() {
+        ++this.playersNumber;
+        PlayerRole role = roles.size() > 1? roles.pop() : roles.peek();
+        return role;
+    }
 
-    public void removePlayer() { --this.playersNumber; }
+    public void removePlayer(PlayerRole role) {
+        --this.playersNumber;
+
+        if (playersNumber == 0) {
+            stop();
+        }
+
+        if (role != PlayerRole.DENIED) {
+            roles.push(role);
+            setGameState(GameState.INTERRUPTED);
+        }
+    }
 
     public void start() {
         //active = true;
-        activeGamesMap.remove(gameState, this);
-        activeGamesMap.put(GameState.PLAYING, this);
         field.setStarted(true);
+
+        setGameState(GameState.PLAYING);
     }
     
     public void stop() {
@@ -124,5 +147,21 @@ public class PongGame implements IUpdatable {
 
     public void setPlayerRole(PlayerRole playerRole) {
         getField().getPaddle(playerRole).setPlayerRole(playerRole);
+    }
+
+    @Override
+    public boolean hasCommands() {
+        return changed || field.hasCommands() || score.hasCommands();
+    }
+
+    @Override
+    public void getCommands(List<AbstractResponseCommand> pool) {
+        if (changed) {
+            changed = false;
+            pool.add(new ResponseGameStateCommand(gameState));
+        }
+
+        field.getCommands(pool);
+        score.getCommands(pool);
     }
 }

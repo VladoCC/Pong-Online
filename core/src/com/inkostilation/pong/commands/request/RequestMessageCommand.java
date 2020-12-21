@@ -1,5 +1,6 @@
-package com.inkostilation.pong.commands;
+package com.inkostilation.pong.commands.request;
 
+import com.inkostilation.pong.commands.AbstractRequestCommand;
 import com.inkostilation.pong.engine.IEngine;
 
 public class RequestMessageCommand extends AbstractRequestCommand {

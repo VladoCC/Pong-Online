@@ -1,6 +1,7 @@
-package com.inkostilation.pong.commands;
+package com.inkostilation.pong.commands.response;
 
 
+import com.inkostilation.pong.commands.AbstractResponseCommand;
 import com.inkostilation.pong.engine.Field;
 
 public class ResponseFieldCommand extends AbstractResponseCommand {
