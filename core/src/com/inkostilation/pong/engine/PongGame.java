@@ -78,13 +78,13 @@ public class PongGame implements IUpdatable, ICommandSender {
     public void removePlayer(PlayerRole role) {
         --this.playersNumber;
 
-        if (playersNumber == 0) {
-            stop();
-        }
-
         if (role != PlayerRole.DENIED) {
             roles.push(role);
             setGameState(GameState.INTERRUPTED);
+        }
+
+        if (playersNumber == 0) {
+            stop();
         }
     }
 
