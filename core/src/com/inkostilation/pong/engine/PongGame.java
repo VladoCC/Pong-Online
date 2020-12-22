@@ -9,14 +9,19 @@ import java.util.*;
 
 public class PongGame implements IUpdatable, ICommandSender {
 
+    private static final float AFTER_GOAL_TIME = 3.0F;
+    private static final float PREP_TIME = 3.0F;
+
     private Field field;
     private Score score;
-    private GameState gameState;
+    private GameState gameState = GameState.INACTIVE;
     private int playersNumber;
     private PlayerRole winner;
     private boolean active = true;
 
     private boolean changed = true;
+
+    private float timer = 0;
 
     private LinkedList<PlayerRole> roles = new LinkedList<>();
 
@@ -62,8 +67,10 @@ public class PongGame implements IUpdatable, ICommandSender {
     }
 
     public void setGameState(GameState gameState) {
-        activeGamesMap.remove(this.gameState, this);
-        activeGamesMap.put(gameState, this);
+        if (gameState != GameState.INACTIVE) {
+            activeGamesMap.remove(this.gameState, this);
+            activeGamesMap.put(gameState, this);
+        }
 
         changed = true;
         this.gameState = gameState;
@@ -80,7 +87,8 @@ public class PongGame implements IUpdatable, ICommandSender {
 
         if (role != PlayerRole.DENIED) {
             roles.push(role);
-            setGameState(GameState.INTERRUPTED);
+            setGameState(GameState.WAITING);
+            field.reset();
         }
 
         if (playersNumber == 0) {
@@ -90,14 +98,14 @@ public class PongGame implements IUpdatable, ICommandSender {
 
     public void start() {
         //active = true;
-        field.setStarted(true);
 
-        setGameState(GameState.PLAYING);
+        setGameState(GameState.PREPARATION);
     }
     
     public void stop() {
         activeGamesMap.remove(gameState, this);
         active = false;
+        setGameState(GameState.INACTIVE);
     }
 
     public void scorePoint(PlayerRole role) {
@@ -107,16 +115,31 @@ public class PongGame implements IUpdatable, ICommandSender {
     @Override
     public void update(float delta) {
         if (active) {
-            if (score.getMaxValueCount() == 0) {
-                field.update(delta);
-                if (!field.isBallInBounds()) {
-                    scorePoint(field.getBall().getX() < 0 ? PlayerRole.FIRST : PlayerRole.SECOND);
-                    field.reset();
-                    gameState = GameState.AFTER_GOAL_CONFIRMATION;
+            if (gameState == GameState.AFTER_GOAL_CONFIRMATION) {
+                timer += delta;
+                if (timer >= AFTER_GOAL_TIME) {
+                    if (score.getMaxValueCount() == 0) {
+                        field.reset();
+                        setGameState(GameState.WAITING);
+                    } else {
+                        winner = score.getMaxedPlayers().get(0);
+                        stop();
+                    }
                 }
-            } else {
-                winner = score.getMaxedPlayers().get(0);
-                stop();
+            } else if (gameState == GameState.PREPARATION) {
+                timer += delta;
+                if (timer >= PREP_TIME) {
+                    field.setStarted(true);
+                    setGameState(GameState.PLAYING);
+                    timer = 0;
+                }
+            }
+
+            field.update(delta);
+            if (!field.isBallInBounds() && gameState == GameState.PLAYING) {
+                scorePoint(field.getBall().getX() < 0 ? PlayerRole.SECOND : PlayerRole.FIRST);
+                setGameState(GameState.AFTER_GOAL_CONFIRMATION);
+                timer = 0;
             }
         }
     }

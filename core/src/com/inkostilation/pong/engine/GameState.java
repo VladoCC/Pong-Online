@@ -2,9 +2,9 @@ package com.inkostilation.pong.engine;
 
 public enum GameState {
     WAITING(0, "Waiting"),
-    CONFIRMATION(1, "Almost ready..."),
+    PREPARATION(1, "Almost ready..."),
     PLAYING(2, "Playing"),
-    INTERRUPTED(3, "Interrupted"),
+    INACTIVE(3, "Interrupted"),
     AFTER_GOAL_CONFIRMATION(4, "Just scored a goal");
 
     public final int state;

@@ -111,6 +111,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void sendScore(SocketChannel channel) throws IOException {
         receiveCommand(new ResponseScoreCommand(playersMap.get(channel).getGame().getScore()), channel);
+        System.out.println("Score sent");
     }
 
     private void removePlayer(SocketChannel channel) throws IOException {
@@ -133,6 +134,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
             receiveCommand(new ResponsePlayerRoleCommand(role), channel);
             sendGameState(channel);
+            sendScore(channel);
         }
         else {
             receiveCommand(new ResponseMessageCommand("You are playing a game!"), channel);
@@ -147,6 +149,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
 
         receiveCommand(new ResponsePlayerRoleCommand(role), channel);
         sendGameState(channel);
+        sendScore(channel);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.inkostilation.pong.desktop.display;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -109,6 +110,8 @@ public class PongScreen implements Screen, IObserver<GameState> {
 
         if (state == GameState.WAITING) {
             ready = false;
+        } else if (state == GameState.INACTIVE) {
+            ((Game) Gdx.app.getApplicationListener()).setScreen(new LobbyScreen());
         }
     }
 }

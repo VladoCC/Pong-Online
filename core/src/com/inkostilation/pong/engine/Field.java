@@ -72,7 +72,9 @@ public class Field extends Rectangle implements IUpdatable, ICommandSender {
     private void onBallOutOfBounds() {
         if (ball.getY() - ball.getRadius() <= getY()
                 || ball.getY() + ball.getRadius() >= getY() + getHeight()) {
-            ball.constrain(this);
+            if (ball.getX() - ball.getRadius() >= getX() && ball.getX() + ball.getRadius() <= getX() + getWidth()) {
+                ball.constrain(this);
+            }
         }
     }
 
@@ -83,6 +85,8 @@ public class Field extends Rectangle implements IUpdatable, ICommandSender {
         ball.resetPosition();
         ball.resetVelocity(ball.getX() - ball.getRadius() < getX() ?
                 Ball.Direction.LEFT : Ball.Direction.RIGHT);
+
+        started = false;
     }
 
     public boolean isStarted() {

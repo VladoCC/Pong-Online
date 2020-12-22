@@ -132,9 +132,11 @@ public class LobbyScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 try {
-                    int index = tree.getSelection().getLastSelected().getPos();
-                    Network.getEngine().sendCommand(new RequestConnectionCommand(index));
-                    ((Game) Gdx.app.getApplicationListener()).setScreen(new PongScreen());
+                    if (tree.getSelection().getLastSelected() != null) {
+                        int index = tree.getSelection().getLastSelected().getPos();
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(new PongScreen());
+                        Network.getEngine().sendCommand(new RequestConnectionCommand(index));
+                    }
                 } catch (IOException | NoEngineException e) {
                     e.printStackTrace();
                 }
@@ -146,8 +148,8 @@ public class LobbyScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 try {
-                    Network.getEngine().sendCommand(new RequestNewGameCommand());
                     ((Game) Gdx.app.getApplicationListener()).setScreen(new PongScreen());
+                    Network.getEngine().sendCommand(new RequestNewGameCommand());
                 } catch (IOException | NoEngineException e) {
                     e.printStackTrace();
                 }

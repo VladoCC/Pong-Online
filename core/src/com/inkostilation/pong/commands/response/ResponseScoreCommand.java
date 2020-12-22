@@ -17,5 +17,6 @@ public class ResponseScoreCommand extends AbstractResponseCommand {
     @Override
     public void execute() throws IOException, NoEngineException {
         getNotifier().notifyObservers(score);
+        System.out.println("Score received");
     }
 }

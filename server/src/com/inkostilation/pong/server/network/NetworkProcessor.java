@@ -107,7 +107,7 @@ public class NetworkProcessor implements IProcessor {
                     command.setMarker((SocketChannel) key.channel());
                     return command;
                 })
-                .filter(c -> !set.add(c.getClass()))
+                .filter(c -> set.add(c.getClass()))
                 .collect(Collectors.toList());
 
         for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
