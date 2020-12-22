@@ -55,6 +55,7 @@ public class PongScreen implements Screen, IObserver<GameState> {
         shapeRenderer.setColor(Color.BLACK);
         rootShape.drawShapeTree(shapeRenderer);
         shapeRenderer.end();
+
         try {
             InputSystem system = (InputSystem) Gdx.input.getInputProcessor();
             if (system.isChanged()) {
@@ -69,6 +70,10 @@ public class PongScreen implements Screen, IObserver<GameState> {
             }
         } catch (IOException | NoEngineException e) {
             e.printStackTrace();
+        }
+
+        if (state == GameState.INACTIVE) {
+            ((Game) Gdx.app.getApplicationListener()).setScreen(new LobbyScreen());
         }
     }
 
@@ -110,8 +115,6 @@ public class PongScreen implements Screen, IObserver<GameState> {
 
         if (state == GameState.WAITING) {
             ready = false;
-        } else if (state == GameState.INACTIVE) {
-            ((Game) Gdx.app.getApplicationListener()).setScreen(new LobbyScreen());
         }
     }
 }

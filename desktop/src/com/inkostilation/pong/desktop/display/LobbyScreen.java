@@ -70,7 +70,7 @@ public class LobbyScreen implements Screen {
             VisTable toActor(PongGame data) {
                 VisTable treeTable = new VisTable();
                 treeTable.row().expandX().fillX();
-                treeTable.add(new VisLabel(data.getGameState().name)).padRight(10);
+                treeTable.add(new VisLabel(data.getGameState().name)).padRight(300);
                 treeTable.add(new VisLabel(data.getPlayersNumber() + ""));
                 return treeTable;
             }
@@ -103,7 +103,7 @@ public class LobbyScreen implements Screen {
         listWindow.setMovable(false);
         listWindow.getTitleTable().removeActor(listWindow.getTitleLabel());
         listWindow.getTitleTable().row();
-        listWindow.getTitleTable().add(new VisLabel("well.. okay")).center();
+        listWindow.getTitleTable().add(new VisLabel("Lobby")).center();
         listWindow.getTitleTable().pack();
 
         view.rebuildView();

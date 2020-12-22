@@ -26,9 +26,8 @@ public class ClientNotifier implements INotifier {
 
     @Override
     public <O> void notifyObservers(O... observable) {
-        if (observable != null && observable.length > 0) {
-            O first = observable[0];
-            Class<O> observableClass = (Class<O>) first.getClass();
+        if (observable != null) {
+            Class<O> observableClass = (Class<O>) observable.getClass().getComponentType();;
             if (observers.containsKey(observableClass)) {
                 observers.get(observableClass).forEach(o -> o.observe(observable));
             }
