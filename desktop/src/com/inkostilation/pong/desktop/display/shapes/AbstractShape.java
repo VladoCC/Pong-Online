@@ -23,7 +23,7 @@ public abstract class AbstractShape implements IShape {
 
     @Override
     public DrawRect getChildrenRect() {
-        return new DrawRect(new Vector2(0, 0), new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        return new DrawRect(new Position(0, 0), new Position(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
     }
 
     @Override

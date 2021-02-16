@@ -4,7 +4,6 @@ import com.inkostilation.pong.exceptions.EmptyParcelException;
 import com.inkostilation.pong.exceptions.ParsingNotFinishedException;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class NetworkConnection {
                 e.printStackTrace();
                 break;
             }
-            ((Buffer) buffer).clear();
+            buffer.clear();
 
             if (parser.isEmpty() || parser.hasObjects()) {
                 try {

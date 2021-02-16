@@ -54,6 +54,7 @@ public class PongEngine implements IPongEngine<SocketChannel> {
     @Override
     public void receiveCommand(AbstractResponseCommand command, SocketChannel channel) throws IOException {
         NetworkProcessor.getInstance().sendMessage(command, channel);
+
     }
 
     @Override

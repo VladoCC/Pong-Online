@@ -3,8 +3,6 @@ package com.inkostilation.pong.server.network;
 import com.inkostilation.pong.commands.AbstractResponseCommand;
 import com.inkostilation.pong.commands.AbstractRequestCommand;
 import com.inkostilation.pong.engine.IEngine;
-import com.inkostilation.pong.exceptions.ProcessorNotStartedException;
-import com.inkostilation.pong.exceptions.ProcessorStartedException;
 import com.inkostilation.pong.processing.NetworkConnection;
 import com.inkostilation.pong.processing.Serializer;
 
@@ -20,6 +18,9 @@ import java.util.stream.Collectors;
 
 public class NetworkProcessor implements IProcessor {
 
+    private static final String host = "localhost";
+    private static final int port = 8080;
+
     private static NetworkProcessor instance = null;
 
     private Selector selector;
@@ -29,24 +30,30 @@ public class NetworkProcessor implements IProcessor {
     private Map<SocketChannel, List<AbstractResponseCommand>> commandQueue = new HashMap<>();
 
 
-    private boolean started = false;
+    private boolean started = true;
+
+    private NetworkProcessor() {
+        try {
+            selector = Selector.open();
+            serverSocket = ServerSocketChannel.open();
+            serverSocket.bind(new InetSocketAddress(host, port));
+            serverSocket.configureBlocking(false);
+            serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static NetworkProcessor getInstance() {
+        if (instance == null) {
+            instance = new NetworkProcessor();
+        }
+        return instance;
+    }
 
     @Override
-    public void start(String host, int port) throws ProcessorStartedException {
-        if (!started) {
-            try {
-                selector = Selector.open();
-                serverSocket = ServerSocketChannel.open();
-                serverSocket.bind(new InetSocketAddress(host, port));
-                serverSocket.configureBlocking(false);
-                serverSocket.register(selector, SelectionKey.OP_ACCEPT);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            started = true;
-        } else {
-            throw new ProcessorStartedException();
-        }
+    public void start() {
+        started = true;
     }
 
     @Override
@@ -55,9 +62,9 @@ public class NetworkProcessor implements IProcessor {
     }
 
     @Override
-    public void processConnections() throws ProcessorNotStartedException {
-        if (started) {
-            try {
+    public void processConnections() {
+        try {
+            if (started) {
                 selector.select(10);
                 final Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 final Iterator<SelectionKey> iter = selectedKeys.iterator();
@@ -75,12 +82,9 @@ public class NetworkProcessor implements IProcessor {
                 if (commandQueue.size() > 0) {
                     sendAll();
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        } else {
-            throw new ProcessorNotStartedException();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -105,7 +109,6 @@ public class NetworkProcessor implements IProcessor {
                 })
                 .filter(c -> set.add(c.getClass()))
                 .collect(Collectors.toList());
-        set.clear();
 
         for (AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command: commands) {
             try {

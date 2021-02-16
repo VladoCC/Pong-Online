@@ -18,7 +18,7 @@ public interface IShape {
     boolean isReady();
 
     default void drawShapeTree(ShapeRenderer renderer) {
-        drawShapeTree(new DrawRect(new Vector2(0,0), new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight())), renderer);
+        drawShapeTree(new DrawRect(new Position(0,0), new Position(Gdx.graphics.getWidth(), Gdx.graphics.getHeight())), renderer);
     }
 
     default DrawRect drawShapeTree(DrawRect rect, ShapeRenderer renderer) {
@@ -33,11 +33,11 @@ public interface IShape {
         return rect;
     }
 
-    class Vector2 {
+    class Position {
         private float x;
         private float y;
 
-        public Vector2(float x, float y) {
+        public Position(float x, float y) {
             this.x = x;
             this.y = y;
         }
@@ -50,30 +50,25 @@ public interface IShape {
             return y;
         }
 
-        public void mult(float multplier) {
-            x *= multplier;
-            y *= multplier;
-        }
-
-        public Vector2 getNewPosition(float moveX, float moveY) {
-            return new Vector2(x + moveX, y + moveY);
+        public Position getNewPosition(float moveX, float moveY) {
+            return new Position(x + moveX, y + moveY);
         }
     }
 
     class DrawRect {
-        private Vector2 bottomLeft;
-        private Vector2 topRight;
+        private Position bottomLeft;
+        private Position topRight;
 
-        public DrawRect(Vector2 bottomLeft, Vector2 topRight) {
+        public DrawRect(Position bottomLeft, Position topRight) {
             this.bottomLeft = bottomLeft;
             this.topRight = topRight;
         }
 
-        public Vector2 getBottomLeft() {
+        public Position getBottomLeft() {
             return bottomLeft;
         }
 
-        public Vector2 getTopRight() {
+        public Position getTopRight() {
             return topRight;
         }
 
