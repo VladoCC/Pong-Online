@@ -14,7 +14,6 @@ public class Ball extends Circle implements IUpdatable {
     private float velocity = 80f;
     private float xVel, yVel, defaultX, defaultY;
 
-
     public enum Direction {
         LEFT(-1), RIGHT(1);
 
@@ -86,5 +85,13 @@ public class Ball extends Circle implements IUpdatable {
 
     public void setVelocity(float velocity) {
         this.velocity = velocity;
+    }
+
+    public float getXVel() {
+        return xVel;
+    }
+
+    public float getYVel() {
+        return yVel;
     }
 }

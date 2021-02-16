@@ -2,6 +2,7 @@ package com.inkostilation.pong.desktop.controls;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.inkostilation.pong.desktop.display.Colors;
 import com.inkostilation.pong.engine.Direction;
 
 import java.util.HashSet;
@@ -25,6 +26,9 @@ public class InputSystem extends InputAdapter {
             case Input.Keys.DOWN:
                 set.add(Direction.DOWN);
                 changed = true;
+                break;
+            case Input.Keys.C:
+                Colors.changePallet();
                 break;
         }
         return super.keyDown(keycode);

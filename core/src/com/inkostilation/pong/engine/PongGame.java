@@ -137,7 +137,7 @@ public class PongGame implements IUpdatable, ICommandSender {
 
             field.update(delta);
             if (!field.isBallInBounds() && gameState == GameState.PLAYING) {
-                scorePoint(field.getBall().getX() < 0 ? PlayerRole.SECOND : PlayerRole.FIRST);
+                scorePoint(field.getBall().getX() < field.getWidth() / 2? PlayerRole.SECOND : PlayerRole.FIRST);
                 setGameState(GameState.AFTER_GOAL_CONFIRMATION);
                 timer = 0;
             }

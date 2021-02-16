@@ -6,12 +6,19 @@ import com.inkostilation.pong.commands.response.ResponseMessageCommand;
 import com.inkostilation.pong.engine.IEngine;
 import com.inkostilation.pong.engine.NullEngine;
 import com.inkostilation.pong.exceptions.NoEngineException;
+import com.inkostilation.pong.server.application.ServerApplication;
 import com.inkostilation.pong.server.engine.PongEngine;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 public class ServerCommandRouter implements ICommandRouter<SocketChannel> {
+
+    private ServerApplication application;
+
+    public ServerCommandRouter(ServerApplication application) {
+        this.application = application;
+    }
 
     @Override
     public void route(AbstractRequestCommand<IEngine<SocketChannel>, SocketChannel> command) throws IOException, NoEngineException {
