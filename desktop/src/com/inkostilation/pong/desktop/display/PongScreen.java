@@ -6,12 +6,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.inkostilation.pong.commands.ConnectToGameCommand;
+import com.badlogic.gdx.math.Matrix4;
 import com.inkostilation.pong.commands.ExitGameCommand;
-import com.inkostilation.pong.commands.UpdateFieldCommand;
 import com.inkostilation.pong.commands.request.RequestInputActionCommand;
 import com.inkostilation.pong.commands.request.RequestReadinessCommand;
-import com.inkostilation.pong.commands.request.RequestScoreCommand;
 import com.inkostilation.pong.commands.request.RequestUpdateCommand;
 import com.inkostilation.pong.desktop.controls.InputSystem;
 import com.inkostilation.pong.desktop.display.shapes.*;
@@ -26,11 +24,18 @@ import java.io.IOException;
 
 public class PongScreen implements Screen, IObserver<GameState> {
 
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private ShapeRenderer shapeRenderer = new PongRenderer();
     private IShape rootShape;
 
     private GameState state;
     private boolean ready = false;
+
+    private BallShape ballShape;
+    private FieldShape field;
+    private ImplosionShape implosiomShape;
+    private ExplosionShape explosionShape;
+
+    private Matrix4 matrix;
 
     @Override
     public void show() {
@@ -38,18 +43,29 @@ public class PongScreen implements Screen, IObserver<GameState> {
 
         rootShape = new ContainerShapes(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         rootShape.addChild(new ScoreShape());
-        FieldShape field = new FieldShape();
+        field = new FieldShape();
         rootShape.addChild(field);
-        field.addChild(new BallShape());
+
+        implosiomShape = new ImplosionShape();
+        field.addChild(implosiomShape);
+
+        explosionShape = new ExplosionShape();
+        field.addChild(explosionShape);
+
         field.addChild(new PaddleShape(PlayerRole.FIRST));
         field.addChild(new PaddleShape(PlayerRole.SECOND));
 
+        ballShape = new BallShape(field);
+        field.addChild(ballShape);
+
+        matrix = shapeRenderer.getTransformMatrix();
         Gdx.input.setInputProcessor(new InputSystem());
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Color color = Colors.getBackgroundColor();
+        Gdx.gl.glClearColor(color.r, color.g, color.b, color.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLACK);
@@ -115,6 +131,12 @@ public class PongScreen implements Screen, IObserver<GameState> {
 
         if (state == GameState.WAITING) {
             ready = false;
+            ballShape.setVisible(true);
+            implosiomShape.setWorking(false);
+        } else if (state == GameState.AFTER_GOAL_CONFIRMATION) {
+            explosionShape.start(ballShape.getPosition(), ballShape.getVelocity(), 2f);
+            ballShape.setVisible(false);
+            implosiomShape.setWorking(true);
         }
     }
 }

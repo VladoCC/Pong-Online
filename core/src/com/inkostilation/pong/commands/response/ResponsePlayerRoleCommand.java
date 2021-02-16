@@ -12,5 +12,7 @@ public class ResponsePlayerRoleCommand extends AbstractResponseCommand {
     }
 
     @Override
-    public void execute() { System.out.println(playerRole.toString());}
+    public void execute() {
+        getNotifier().notifyObservers(playerRole);
+    }
 }
