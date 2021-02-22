@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class NetworkProcessor implements IProcessor {
 
-    private static final String host = "localhost";
+    private static final String host = "0.0.0.0";
     private static final int port = 8080;
 
     private static NetworkProcessor instance = null;
