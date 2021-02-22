@@ -12,4 +12,4 @@ In this way, you can decide from one side what code you want to execute on anoth
 And the whole point about sanitizing received data comes to keeping track of what types of command are included into your application.
 
 ### Where can I find more information about this game and network protocol?
-You can find video about creation process of this game on [my YouTube channel](https://www.youtube.com/channel/UCIZ2dFv95v8V61fqsn35PQA), where I'm describing everything about it in more details.
+You can find [video](https://youtu.be/qF7x4BOLTm8) about creation process of this game on [my YouTube channel](https://www.youtube.com/channel/UCIZ2dFv95v8V61fqsn35PQA), where I'm describing everything about it in more details.
